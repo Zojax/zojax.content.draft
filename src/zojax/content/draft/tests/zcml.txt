@@ -1,0 +1,147 @@
+=====================
+zojax:draft directive
+=====================
+
+Registration new content type with zcml directive.
+
+   >>> from zope import interface, component
+
+Load directive declaration
+
+   >>> import zojax.content.draft
+   >>> from zope.configuration import xmlconfig
+   >>> context = xmlconfig.file('meta.zcml', zojax.content.draft)
+
+First we need register standard content type
+
+   >>> class ITestContent(interface.Interface):
+   ...     pass
+   >>> class TestContent(object):
+   ...     interface.implements(ITestContent)
+
+   >>> context = xmlconfig.string("""
+   ... <configure
+   ...   xmlns="http://namespaces.zope.org/zope"
+   ...   xmlns:zojax="http://namespaces.zope.org/zojax" i18n_domain="zope">
+   ...   <include package="zope.security" file="meta.zcml" />
+   ...   <include package="zojax.content.type" file="meta.zcml" />
+   ...
+   ...  <permission id="zojax.AddContent" title="zojax.AddContent" />
+   ...
+   ...   <zojax:content
+   ...     name="test.content"
+   ...     title="Test content"
+   ...     class="zojax.content.draft.TESTS.TestContent"
+   ...     schema="zojax.content.draft.TESTS.ITestContent"
+   ...     description="Simple content type."
+   ...     permission="zojax.AddContent" />
+   ... </configure>""", context)
+
+   >>> from zojax.content.draft import interfaces, draft, contenttype
+
+Let's create register simple content types
+
+   >>> class DraftTestContent(draft.DraftContent):
+   ...     pass
+
+   >>> class DraftContentType(contenttype.DraftContentType):
+   ...     pass
+
+   >>> context = xmlconfig.string("""
+   ... <configure xmlns:zojax="http://namespaces.zope.org/zojax" i18n_domain="zope">
+   ...
+   ...   <zojax:draft
+   ...     content="test.content"
+   ...     destination="test.content"
+   ...     class="zojax.content.draft.TESTS.DraftTestContent"
+   ...     ctclass="zojax.content.draft.TESTS.DraftContentType"
+   ...     submit="zope.Public"
+   ...     publish="zojax.AddContent"
+   ...   />
+   ... </configure>""", context)
+   Traceback (most recent call last):
+   ...
+   ZopeXMLConfigurationError:...
+
+
+   >>> context = xmlconfig.string("""
+   ... <configure xmlns:zojax="http://namespaces.zope.org/zojax" i18n_domain="zope">
+   ...
+   ...   <zojax:draft
+   ...     content="test.content"
+   ...     destination="test.content"
+   ...     class="zojax.content.draft.TESTS.DraftTestContent"
+   ...     ctclass="zojax.content.draft.TESTS.DraftContentType"
+   ...     publish="zojax.AddContent"
+   ...   />
+   ... </configure>""", context)
+
+
+Now contet type registered in system, it's registered in system by it's name.
+
+   >>> ct = component.getUtility(interfaces.IDraftContentType, 'test.content')
+
+   >>> interfaces.IDraftContentType.providedBy(ct)
+   True
+
+   >>> isinstance(ct, DraftContentType)
+   True
+
+   >>> ct.contenttype
+   <zojax.content.type.contenttype.ContentType ...>
+
+   >>> ct.submit
+   ''
+
+   >>> ct.publish
+   'zojax.AddContent'
+
+   >>> ct.destination
+   [<zojax.content.type.contenttype.ContentType ...>]
+
+   >>> ct.retractperm
+   ''
+
+   >>> ct.retractable
+   True
+
+   >>> ct.saveable
+   True
+
+
+We have newly created interface
+
+   >>> zojax.content.draft.interfaces.test_content
+   <InterfaceClass zojax.content.draft.interfaces.test_content>
+
+And it's provided by draft content type
+   >>> zojax.content.draft.interfaces.test_content.providedBy(ct)
+   True
+
+
+
+   >>> context = xmlconfig.string("""
+   ... <configure xmlns:zojax="http://namespaces.zope.org/zojax" i18n_domain="zope">
+   ...
+   ...   <zojax:draft
+   ...     content="test.content"
+   ...     destination="test.content"
+   ...     retract="zojax.AddContent"
+   ...     retractable="True"
+   ...     saveable="False"
+   ...     class="zojax.content.draft.TESTS.DraftTestContent"
+   ...     ctclass="zojax.content.draft.TESTS.DraftContentType"
+   ...     publish="zojax.AddContent"
+   ...   />
+   ... </configure>""", context)
+
+   >>> ct = component.getUtility(interfaces.IDraftContentType, 'test.content')
+
+   >>> ct.retractperm
+   'zojax.AddContent'
+
+   >>> ct.retractable
+   True
+
+   >>> ct.saveable
+   False

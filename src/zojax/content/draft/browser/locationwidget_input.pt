@@ -1,0 +1,27 @@
+<tal:block tal:repeat="item view/items">
+  <div class="z-locationwidget-item">
+    <input type="radio" id="" value=""
+           tal:attributes="id item/id;
+                           value item/value;
+                           name string:${view/name}:list;
+			   checked item/selected;
+                           class view/klass;
+                           style view/style;
+			   lang view/lang;
+			   disabled view/disabled;
+			   tabindex view/tabindex;" />
+    <span>
+      <tal:block tal:condition="item/icon" tal:content="structure item/icon" />
+      <a tal:content="structure item/breadcrum/name" target="_blank"
+	 tal:attributes="href item/breadcrum/url; title item/description">label</a>
+      <tal:block tal:condition="item/space">
+	in
+	<a tal:content="structure item/space" target="_blank"
+	   tal:attributes="href item/spaceUrl; title item/spaceDescription">label</a>
+      </tal:block>
+    </span>
+  </div>
+</tal:block>
+
+<input name="field-empty-marker" type="hidden" value="1"
+       tal:attributes="name string:${view/name}-empty-marker" />

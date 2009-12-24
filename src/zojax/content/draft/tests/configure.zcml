@@ -1,0 +1,160 @@
+<configure
+   xmlns="http://namespaces.zope.org/zope"
+   xmlns:zojax="http://namespaces.zope.org/zojax"
+   xmlns:browser="http://namespaces.zope.org/browser"
+   i18n_domain="zope">
+
+  <!-- permisisons -->
+  <permission
+     id="test.AddContent1" title="Add content1" />
+
+  <permission
+     id="test.AddContent2" title="Add content2" />
+
+  <permission
+     id="test.SubmitContent1" title="Submit content1" />
+
+  <permission
+     id="test.SubmitContent2" title="Submit content2" />
+
+  <permission
+     id="test.RetractContent1" title="Retract content1" />
+
+
+  <!-- content -->
+  <zojax:content
+     title="Content1"
+     schema=".content.IContent1"
+     name="tests.content1"
+     class=".content.Content1"
+     type="zojax.content.type.interfaces.IActivePortalType"
+     permission="test.AddContent1" />
+
+  <class class=".content.Content1">
+    <implements interface="zojax.ownership.interfaces.IOwnerAware" />
+    <implements interface="zojax.content.type.interfaces.ISearchableContent" />
+
+    <require
+       permission="zope.Public"
+       interface="zojax.content.type.interfaces.IItem"
+       set_schema="zojax.content.type.interfaces.IItem" />
+  </class>
+
+  <zojax:draft
+     content="tests.content1"
+     publish="test.AddContent1"
+     submit="test.SubmitContent1"
+     retract="test.RetractContent1"
+     destination="tests.container1 tests.container2" />
+
+  <zojax:contentpermission
+     contenttype="tests.content1"
+     permission="test.AddContent1"
+     managepermission="zojax.ManageContentPermission"
+     class="zojax.content.permissions.content.ContentPermission"
+     category="zojax.content.permissions.interfaces.IAddPermission" />
+
+  <zojax:contentpermission
+     contenttype="tests.content1"
+     permission="test.SubmitContent1"
+     managepermission="zojax.ManageContentPermission"
+     class="zojax.content.permissions.content.ContentPermission"
+     category="zojax.content.permissions.interfaces.ISubmitPermission" />
+
+  <zojax:content
+     title="Content2"
+     schema=".content.IContent2"
+     name="tests.content2"
+     class=".content.Content2"
+     type="zojax.content.type.interfaces.IActivePortalType"
+     permission="test.AddContent2" />
+
+  <class class=".content.Content2">
+    <implements interface="zojax.ownership.interfaces.IOwnerAware" />
+    <implements interface="zojax.content.type.interfaces.ISearchableContent" />
+
+    <require
+       permission="zope.Public"
+       interface="zojax.content.type.interfaces.IItem"
+       set_schema="zojax.content.type.interfaces.IItem" />
+  </class>
+
+  <zojax:draft
+     content="tests.content2"
+     publish="test.AddContent2"
+     submit="test.SubmitContent2" />
+
+  <zojax:contentpermission
+     contenttype="tests.content2"
+     permission="test.AddContent2"
+     managepermission="zojax.ManageContentPermission"
+     class="zojax.content.permissions.content.ContentPermission"
+     category="zojax.content.permissions.interfaces.IAddPermission" />
+
+  <zojax:contentpermission
+     contenttype="tests.content2"
+     permission="test.SubmitContent2"
+     managepermission="zojax.ManageContentPermission"
+     class="zojax.content.permissions.content.ContentPermission"
+     category="zojax.content.permissions.interfaces.ISubmitPermission" />
+
+  <zojax:content
+     title="Container1"
+     schema=".content.IContainer1"
+     name="tests.container1"
+     class=".content.Container1"
+     type="zojax.content.type.interfaces.IActivePortalType" /> 
+
+  <class class=".content.Container1">
+    <implements interface="zojax.ownership.interfaces.IOwnerAware" />
+    <implements interface="zojax.content.type.interfaces.ISearchableContent" />
+    <implements interface="zojax.content.type.interfaces.IContainerContentsAware" />
+
+    <require
+       permission="zope.View"
+       interface="zope.app.container.interfaces.IReadContainer
+		  zojax.content.type.interfaces.IItem" />
+
+    <require
+       permission="zojax.ModifyContent"
+       interface="zope.app.container.interfaces.IWriteContainer"
+       set_schema="zojax.content.type.interfaces.IItem" />
+  </class>
+
+  <zojax:content
+     title="Container2"
+     schema=".content.IContainer2"
+     name="tests.container2"
+     class=".content.Container2"
+     contains="tests.content2"
+     type="zojax.content.type.interfaces.IActivePortalType" /> 
+
+  <class class=".content.Container2">
+    <implements interface="zojax.ownership.interfaces.IOwnerAware" />
+    <implements interface="zojax.content.type.interfaces.ISearchableContent" />
+    <implements interface="zojax.content.type.interfaces.IContainerContentsAware" />
+
+    <require
+       permission="zope.View"
+       interface="zope.app.container.interfaces.IReadContainer
+		  zojax.content.type.interfaces.IItem" />
+
+    <require
+       permission="zojax.ModifyContent"
+       interface="zope.app.container.interfaces.IWriteContainer"
+       set_schema="zojax.content.type.interfaces.IItem" />
+  </class>
+
+  <zojax:pagelet
+     type="content.type.preview"
+     for=".content.IContent1"
+     template="preview.pt"
+     permission="zope.View" />
+
+  <zojax:pagelet
+     type="content.type.preview"
+     for=".content.IContent2"
+     template="preview.pt"
+     permission="zope.View" />
+
+</configure>

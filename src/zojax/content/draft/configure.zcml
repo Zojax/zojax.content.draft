@@ -1,0 +1,111 @@
+<configure
+   xmlns="http://namespaces.zope.org/zope"
+   xmlns:zojax="http://namespaces.zope.org/zojax"
+   i18n_domain="zojax.content.draft">
+
+  <interface
+     type="zojax.content.type.interfaces.IContentTypeType"
+     interface="zojax.content.draft.interfaces.IDraftContentType" />
+
+  <!-- permissions -->
+  <include file="permissions.zcml" />
+
+  <!-- draft container -->
+  <zojax:content
+     title="Draft Container"
+     name="draft.container"
+     schema=".interfaces.IDraftContainer"
+     class=".container.DraftContainer"
+     contains=".interfaces.IDraftContent"
+     ctclass=".container.DraftContainerContentType"
+     type="zojax.content.type.interfaces.IInactiveType" />
+
+  <class class=".container.DraftContainer">
+    <implements interface="zojax.ownership.interfaces.IInheritOwnership" />
+    <implements interface="zojax.content.type.interfaces.IRenameNotAllowed" />
+    <implements interface="zojax.content.type.interfaces.IUnremoveableContent"/>
+
+    <require
+       permission="zope.View"
+       interface="zojax.content.type.interfaces.IItem
+		  zope.app.container.interfaces.IReadContainer" />
+    <require
+       permission="zojax.ModifyContent"
+       interface=".interfaces.IDraftContainer
+		  zope.app.container.interfaces.IWriteContainer" />
+  </class>
+
+  <class class=".container.DraftContainerContentType">
+    <require
+       permission="zope.Public"
+       interface="zojax.content.type.interfaces.IContentType
+		  zope.location.interfaces.ILocation" />
+  </class>
+
+  <!-- draft content type -->
+  <class class=".contenttype.DraftContentType">
+    <require
+       permission="zope.View"
+       interface=".interfaces.IDraftContentType" />
+  </class>
+
+  <adapter factory=".contenttype.draftContentType" />
+
+  <!-- DraftedContentType -->
+  <class class=".contenttype.DraftedContentType">
+    <allow interface="zojax.content.type.interfaces.IContentType" />
+  </class>
+
+  <!-- permission checker -->
+  <adapter
+     name="zojax.content-permissionChecker"
+     factory=".checker.PermissionChecker" />
+
+  <!-- draft content class -->
+  <class class=".draft.DraftContent">
+    <implements interface="zojax.content.type.interfaces.ISearchableContent" />
+
+    <require
+       permission="zope.View"
+       set_attributes="step"
+       interface="zojax.content.draft.interfaces.IDraftContent
+		  zojax.content.draft.interfaces.IDraftLocation" />
+    <require
+       permission="zojax.ModifyContent"
+       set_schema="zojax.content.draft.interfaces.IDraftContent
+		   zojax.content.draft.interfaces.IDraftLocation" />
+  </class>
+
+  <adapter
+     factory=".draft.draftOwnership" />
+
+  <subscriber
+     handler=".draft.daftModifiedHandler" />
+
+  <subscriber
+     handler=".draft.draftRemovedHandler" />
+
+  <!-- default locations -->
+  <utility
+     name="zojax.content.draft.locations"
+     factory=".vocabulary.LocationsVocabulary" />
+
+  <!-- IKeyReference -->
+  <adapter factory=".keyref.getKeyReference" />
+
+  <subscriber handler=".keyref.draftAdded" />
+  <subscriber handler=".keyref.draftRemoved" />
+
+  <!-- indexes -->
+  <include file="indexes.zcml" />
+
+  <!-- browser views -->
+  <include package=".browser" />
+
+  <!-- generations -->
+  <utility
+     name="zojax.content.draft"
+     provides="zope.app.generations.interfaces.ISchemaManager"
+     component=".generations.schemaManager" />
+
+</configure>

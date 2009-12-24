@@ -1,0 +1,36 @@
+<configure
+   xmlns="http://namespaces.zope.org/zope"
+   xmlns:zojax="http://namespaces.zope.org/zojax"
+   i18n_domain="zojax.content.draft">
+
+  <utility
+     name="draftContent"
+     component=".indexes.draftContent"
+     provides="zojax.catalog.interfaces.ICatalogIndexFactory" />
+
+  <utility
+     name="isDraft"
+     component=".indexes.isDraft"
+     provides="zojax.catalog.interfaces.ICatalogIndexFactory" />
+
+  <utility
+     name="draftStatus"
+     component=".indexes.draftStatus"
+     provides="zojax.catalog.interfaces.ICatalogIndexFactory" />
+
+  <utility
+     name="draftSubmitTo"
+     component=".indexes.draftSubmitTo"
+     provides="zojax.catalog.interfaces.ICatalogIndexFactory" />
+
+  <utility
+     name="draftPublishTo"
+     component=".indexes.draftPublishTo"
+     provides="zojax.catalog.interfaces.ICatalogIndexFactory" />
+
+  <utility
+     name="draftPublishable"
+     component=".indexes.draftPublishable"
+     provides="zojax.catalog.interfaces.ICatalogIndexFactory" />
+
+</configure>

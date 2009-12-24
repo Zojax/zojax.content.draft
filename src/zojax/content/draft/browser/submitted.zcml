@@ -1,0 +1,53 @@
+<configure
+   xmlns="http://namespaces.zope.org/zope"
+   xmlns:zojax="http://namespaces.zope.org/zojax"
+   i18n_domain="zojax.content.draft">
+
+  <zojax:layout
+     layout="."
+     for=".interfaces.ISubmittedDraftWizard"
+     template="wizardlayout.pt"
+     class=".wizardlayout.WizardLayout" />
+
+  <zojax:pagelet
+     for=".interfaces.ISubmittedDraftWizard"
+     template="submittedbuttons.pt"
+     type="form.buttons" />
+
+  <!-- submitted view -->
+  <zojax:pagelet
+     name="index.html"
+     for="..interfaces.ISubmittedDraftContent"
+     class=".submitted.SubmittedDraftWizard"
+     provides=".interfaces.ISubmittedDraftWizard"
+     permission="zope.View" />
+
+  <zojax:pagelet
+     name="preview"
+     title="Preview"
+     type="wizard.step"
+     for="zojax.content.type.interfaces.IContent
+	  zojax.content.draft.browser.interfaces.ISubmittedDraftWizard"
+     class=".preview.ContentPreviewStep"
+     permission="zope.View"
+     weight="0" />
+
+  <zojax:pagelet
+     name="location"
+     type="wizard.step"
+     for="zojax.content.type.interfaces.IContent
+	  zojax.content.draft.browser.interfaces.ISubmittedDraftWizard"
+     class=".submitted.ContentLocationStep"
+     permission="zope.View"
+     weight="10" />
+
+  <zojax:pagelet
+     name="content"
+     type="wizard.step"
+     for="zojax.content.type.interfaces.IContent
+	  zojax.content.draft.browser.interfaces.ISubmittedDraftWizard"
+     class=".submitted.ContentStep"
+     permission="zope.View"
+     weight="20" />
+
+</configure>

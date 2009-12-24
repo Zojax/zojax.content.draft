@@ -1,0 +1,71 @@
+<configure
+   xmlns="http://namespaces.zope.org/zope"
+   i18n_domain="zojax.content.draft">
+
+  <!-- permissions map for container -->
+  <permissions for=".interfaces.IDraftContainer" name="default">
+    <denyAll permission="zope.View" />
+    <denyAll permission="zojax.ModifyContent" />
+    <denyAll permission="zojax.DeleteContent" />
+    <denyAll permission="zojax.changeOwnership" />
+
+    <grant permission="zojax.ModifyContent"
+	   role="content.Owner
+		 zope.Manager" />
+
+    <grant permission="zojax.DeleteContent"
+	   role="content.Owner
+		 zope.Manager" />
+    
+    <grant permission="zope.app.dublincore.change"
+	   role="zope.Manager
+	     	 content.Owner" />
+
+    <grant permission="zope.View"
+	   role="zope.Manager
+	     	 content.Owner" />
+  </permissions>
+
+  <!-- draft submitted state -->
+  <permissions name="draft.submitted">
+    <denyAll permission="zojax.ModifyContent" />
+    <grant permission="zojax.ModifyContent" role="zope.Manager" />
+  </permissions>
+
+  <!-- content permissions -->
+  <permissions name="content.permissions.opened">
+    <denyAll permission="zojax.ModifyContent" />
+    <denyAll permission="zojax.DeleteContent" />
+      
+    <grant permission="zojax.ModifyContent"
+	   role="content.Owner
+		 zope.Manager" />
+    
+    <grant permission="zojax.DeleteContent"
+	   role="content.Owner
+		 zope.Manager" />
+    
+    <grant permission="zope.app.dublincore.change"
+	   role="zope.Manager
+	     	 content.Owner" />
+  </permissions>
+
+  <permissions name="content.permissions.closed">
+    <denyAll permission="zojax.ModifyContent" />
+    <denyAll permission="zojax.DeleteContent" />
+
+    <grant permission="zojax.ModifyContent"
+	   role="zope.Manager" />
+    
+    <grant permission="zojax.DeleteContent"
+	   role="zope.Manager" />
+    
+    <grant permission="zope.app.dublincore.change"
+	   role="content.Owner" />
+  </permissions>
+
+  <adapter
+     name="content.permissions"
+     factory=".permissions.getContentPermissions" />
+
+</configure>

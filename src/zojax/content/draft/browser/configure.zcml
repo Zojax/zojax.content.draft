@@ -1,0 +1,182 @@
+<configure
+   xmlns="http://namespaces.zope.org/zope"
+   xmlns:zcml="http://namespaces.zope.org/zcml"
+   xmlns:z3c="http://namespaces.zope.org/z3c"
+   xmlns:zojax="http://namespaces.zope.org/zojax"
+   xmlns:browser="http://namespaces.zope.org/browser"
+   i18n_domain="zojax.content.draft">
+
+  <!-- Draft Adding Wizard -->
+  <include file="adding.zcml" />
+
+  <!-- Draft Submitted View -->
+  <include file="submitted.zcml" />
+
+  <!-- Draft container -->
+  <browser:defaultView
+     name="index.html"
+     for="..interfaces.IDraftContainer" />
+
+  <zojax:pagelet
+     name="index.html"
+     for="..interfaces.IDraftContainer"
+     template="draftcontainer.pt"
+     class=".draftcontainer.DraftContainerView"
+     permission="zope.View" />
+
+  <adapter factory=".breadcrumb.DraftContentBreadcrumb" />
+  <adapter factory=".breadcrumb.DraftContainerBreadcrumb" />
+  <adapter factory=".breadcrumb.DraftedContentBreadcrumb" />
+
+  <!-- draft content icon -->
+  <adapter
+     name="zmi_icon"
+     factory=".icons.draftContentIcon" />
+
+  <!-- draft content type icon -->
+  <adapter
+     name="zmi_icon"
+     factory=".icons.draftContentTypeIcon" />
+
+  <!-- draft view wizard -->
+  <zojax:pagelet
+     name="index.html"
+     for="..interfaces.IDraftContent"
+     class=".draft.EditDraftWizard"
+     allowed_attributes="title actions"
+     allowed_interface="zojax.wizard.interfaces.IWizard
+			z3c.form.interfaces.IInputForm"
+     provides=".interfaces.IEditDraftWizard
+	       zojax.wizard.interfaces.IWizardWithTabs"
+     permission="zojax.ModifyContent" />
+
+  <zojax:layout
+     layout="."
+     for=".interfaces.IEditDraftWizard"
+     template="wizardlayout.pt"
+     class=".wizardlayout.WizardLayout" />
+
+  <zojax:pagelet
+     name="contents"
+     type="wizard.step"
+     for="zojax.content.type.interfaces.IContainerContentsAware
+	  zojax.content.draft.browser.interfaces.IEditDraftWizard"
+     class="zojax.wizard.step.WizardStepDisabled"
+     weight="0" />
+
+  <zojax:pagelet
+     name="activity"
+     type="wizard.step"
+     for="zojax.content.type.interfaces.IContent
+	  zojax.content.draft.browser.interfaces.IEditDraftWizard"
+     class="zojax.wizard.step.WizardStepDisabled"
+     weight="0" />
+
+  <!-- edit content step -->
+  <zojax:pagelet
+     name="content"
+     type="wizard.step"
+     for="zojax.content.draft.interfaces.IDraftedContent
+	  zojax.content.draft.browser.interfaces.IEditDraftWizard"
+     class=".content.ContentStep"
+     weight="100" />
+
+  <zojax:pagelet
+     name="shortname"
+     type="form.subform"
+     for="..interfaces.IDraftedContent
+	  zojax.content.forms.interfaces.IContentStep"
+     class=".content.ContentShortnameForm"
+     weight="99999" />
+
+  <adapter factory=".content.ContentNameValidator" />
+
+  <!-- preview step -->
+  <zojax:pagelet
+     name="view"
+     title="Preview"
+     type="wizard.step"
+     for="zojax.content.type.interfaces.IContent
+	  zojax.content.draft.browser.interfaces.IEditDraftWizard"
+     class=".preview.ContentPreviewStep"
+     provides="zojax.layoutform.interfaces.IPageletFormView"
+     permission="zojax.ModifyContent"
+     weight="0" />
+
+  <zojax:pagelet
+     type="pagelet"
+     for=".preview.ContentPreviewStep"
+     template="preview.pt" />
+
+  <adapter
+     for="..interfaces.IDraftContent *"
+     factory="z3c.traverser.traverser.PluggableTraverser"
+     provides="zope.publisher.interfaces.IPublishTraverse" />
+
+  <subscriber
+     for="..interfaces.IDraftContent *"
+     provides="z3c.traverser.interfaces.ITraverserPlugin"
+     factory=".publisher.PublisherPlugin" />
+
+  <!-- location step -->
+  <zojax:pagelet
+     name="location"
+     type="wizard.step"
+     for="zojax.content.type.interfaces.IContent
+	  zojax.content.draft.browser.interfaces.IEditDraftWizard"
+     class=".location.ContentLocationStep"
+     permission="zojax.ModifyContent"
+     weight="10" />
+
+  <!-- styles -->
+  <zojax:resourceinclude
+     name="zojax-content-draft.css" library="zojax"
+     type="stylesheet" file="styles.css" filetype="zrt" />
+
+  <!-- buttons -->
+  <adapter 
+     provides="z3c.form.interfaces.IButtonAction"
+     factory=".buttons.SubmitButtonAction" />
+
+  <class class=".buttons.SubmitButtonAction">
+    <allow attributes="render" />
+  </class>
+
+  <adapter 
+     provides="z3c.form.interfaces.IButtonAction"
+     factory=".buttons.PublishButtonAction" />
+
+  <class class=".buttons.PublishButtonAction">
+    <allow attributes="render" />
+  </class>
+
+  <adapter 
+     provides="z3c.form.interfaces.IButtonAction"
+     factory=".buttons.RemoveButtonAction" />
+
+  <class class=".buttons.RemoveButtonAction">
+    <allow attributes="render" />
+  </class>
+
+  <adapter 
+     provides="z3c.form.interfaces.IButtonAction"
+     factory=".buttons.SaveDraftButtonAction" />
+
+  <class class=".buttons.SaveDraftButtonAction">
+    <allow attributes="render" />
+  </class>
+
+  <!-- location widget -->
+  <class class=".locationwidget.LocationWidget">
+    <require
+       permission="zope.Public"
+       interface="z3c.form.interfaces.ISelectWidget" />
+  </class>
+
+  <z3c:widgetTemplate
+     mode="input"
+     widget=".locationwidget.LocationWidget"
+     layer="z3c.form.interfaces.IFormLayer"
+     template="locationwidget_input.pt" />
+
+</configure>

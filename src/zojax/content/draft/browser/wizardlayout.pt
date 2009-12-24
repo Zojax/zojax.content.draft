@@ -1,0 +1,52 @@
+<div class="z-wizard">
+  <h1 class="z-draft-heading">
+    <span class="z-draft-heading-info">
+      <tal:block content="layoutcontext/label"/>
+      <tal:block content="layoutcontext/title|nothing" />
+    </span>
+    <span class="z-draft-heading-location">
+      in
+      <a href="#" tal:condition="layout/locationUrl"
+	 tal:attributes="href string:${layout/locationUrl}"
+	 tal:content="layout/locationTitle">Location</a>
+      <tal:block tal:condition="layout/containerUrl">
+	<a href="#"
+	   tal:attributes="href string:${layout/containerUrl}">
+	  (<tal:block content="layout/containerTitle"/>)</a>
+      </tal:block>
+      <span tal:condition="not:layout/locationUrl" class="z-draft-heading-info">
+	Location is not selected
+      </span>
+    </span>
+  </h1>
+  
+  <div class="z-form-description"
+       tal:content="layoutcontext/description|nothing"></div>
+
+  <ul class="z-wizard-wizardsteps">
+    <tal:block tal:repeat="step layout/getSteps">
+      <li tal:define="cls python:not step['completed'] and 'notCompleted' or ''"
+	  tal:attributes="class python:step['current'] and '%s %s'% (layout.currentClass, cls) or cls">
+	<a tal:content="step/title" tal:attributes="href step/url"></a>
+      </li>
+    </tal:block>
+  </ul>
+  <form action="." method="post" enctype="multipart/form-data"
+	tal:attributes="method layoutcontext/method;
+			enctype layoutcontext/enctype;
+			acceptCharset layoutcontext/acceptCharset;
+			accept layoutcontext/accept;
+			action layoutcontext/action;
+			name layoutcontext/name;
+			id layoutcontext/id">
+    <div class="z-wizard-viewspace">
+      <tal:block content="structure view/render" />
+    </div>
+    
+    <tal:block tal:content="structure layoutcontext/@@pagelet/form.buttons" />
+  </form>
+</div>
+<tal:block on-error="nothing">
+  <script type="text/javascript"
+	  tal:content="structure layout/subscribeScript"></script>
+</tal:block>
