@@ -1,0 +1,293 @@
+=============
+Draft content
+=============
+
+    >>> from zope import interface, component, event
+    >>> from zope.proxy import removeAllProxies
+    >>> from zope.lifecycleevent import ObjectModifiedEvent, ObjectCreatedEvent
+    >>> from zope.security.management import newInteraction, endInteraction
+    >>> from zope.security.management import checkPermission, getInteraction
+    >>> from zope.app.intid.interfaces import IIntIds
+    >>> from zope.app.security.interfaces import IAuthentication
+    >>> from zope.app.component.hooks import setSite
+
+    >>> from zojax.content.draft import interfaces
+    >>> from zojax.content.draft.tests import content
+    >>> from zojax.content.draft.draft import DraftContent
+    >>> from zojax.content.draft.interfaces import IDraftContentType
+
+    >>> root = getRootFolder()
+    >>> setSite(root)
+    >>> sm = root.getSiteManager()
+    >>> auth = component.getUtility(IAuthentication)
+
+Interaction
+
+    >>> class Participation:
+    ...     interaction = None
+    ...     def __init__(self, principal):
+    ...         self.principal = principal
+
+    >>> newInteraction(Participation(auth.getPrincipal('zope.mgr')))
+
+
+Personal space manager
+
+    >>> from zojax.personal.space.manager import PersonalSpaceManager
+    >>> from zojax.personal.space.interfaces import IPersonalSpaceManager
+
+    >>> people = PersonalSpaceManager()
+    >>> event.notify(ObjectCreatedEvent(people))
+
+    >>> root['people'] = people
+    >>> sm.registerUtility(root['people'], IPersonalSpaceManager)
+
+    >>> manager = root['people']
+    >>> manager.assignPersonalSpace(auth.getPrincipal('zope.mgr'))
+    >>> manager.assignPersonalSpace(auth.getPrincipal('zope.user1'))
+    >>> manager.assignPersonalSpace(auth.getPrincipal('zope.user2'))
+
+
+Create content
+
+    >>> container = content.Container1(title=u'Container 1')
+    >>> event.notify(ObjectCreatedEvent(container))
+
+    >>> root['container1'] = container
+
+    >>> container = content.Container2(title=u'Container 2')
+    >>> event.notify(ObjectCreatedEvent(container))
+
+    >>> root['container2'] = container
+
+We will give submit pemrission for container1 and add permission for container2
+for user1
+
+    >>> from zope.securitypolicy.interfaces import IPrincipalPermissionManager
+    >>> IPrincipalPermissionManager(
+    ...     root['container1']).grantPermissionToPrincipal(
+    ...         'test.SubmitContent2', 'zope.user1')
+    >>> IPrincipalPermissionManager(
+    ...     root['container2']).grantPermissionToPrincipal(
+    ...         'test.AddContent2', 'zope.user1')
+
+    >>> event.notify(ObjectModifiedEvent(root['container1']))
+    >>> event.notify(ObjectModifiedEvent(root['container2']))
+
+Now create draft content
+
+    >>> endInteraction()
+    >>> newInteraction(Participation(auth.getPrincipal('zope.user1')))
+
+    >>> dtc = sm.getUtility(IDraftContentType, 'tests.content2')
+
+    >>> draft = dtc.create()
+    >>> isinstance(draft.content, content.Content2)
+    True
+
+    >>> draft.title
+    u''
+    >>> draft.title = u'Test title'
+    >>> draft.title
+    u'Test title'
+    >>> draft.content.title
+    u'Test title'
+
+    >>> draft.description
+    u''
+    >>> draft.description = u'Test description'
+    >>> draft.description
+    u'Test description'
+    >>> draft.content.description
+    u'Test description'
+
+    >>> draft.isPublishable()
+    False
+    >>> draft.publish()
+    Traceback (most recent call last):
+    ...
+    DraftException: You can't publish content to this location.
+
+    >>> draft.isSubmitable()
+    False
+    >>> draft.submit()
+    Traceback (most recent call last):
+    ...
+    DraftException: You can't submit content to this location.
+
+    >>> draft.reject(u'')
+    Traceback (most recent call last):
+    ...
+    Unauthorized: reject
+
+    >>> draft.retract()
+    Traceback (most recent call last):
+    ...
+    Unauthorized: retract
+
+    >>> ids = component.getUtility(IIntIds)
+
+    >>> dcontainer = component.queryMultiAdapter(
+    ...     (auth.getPrincipal('zope.user1'), dtc), interfaces.IDraftContainer)
+
+    >>> draft = dtc.add(draft, dcontainer)
+
+    >>> draft.__parent__ is dcontainer
+    True
+
+    >>> list(dcontainer.items())
+    [(u'DraftContent', <zojax.content.draft.draft.DraftContent ...>)]
+
+    >>> dtc.isAvailable()
+    False
+
+    >>> dtc.__bind__(root).isAvailable()
+    False
+
+    >>> dtc.__bind__(dcontainer).isAvailable()
+    True
+
+
+Let's set location
+
+    >>> draft.location = ids.getId(root['container1'])
+    >>> draft.getLocation()
+    <zojax.content.draft.tests.content.Container1 ...>
+
+    >>> draft.isPublishable()
+    False
+
+    >>> draft.isSubmitable()
+    True
+
+    >>> draft.publish()
+    Traceback (most recent call last):
+    ...
+    DraftException: You can't publish content to this location.
+
+
+Let's submit draft
+
+    >>> draft.submit()
+
+    >>> interfaces.ISubmittedDraftContent.providedBy(draft)
+    True
+
+    >>> from zojax.permissionsmap.interfaces import IObjectPermissionsMaps
+    >>> list(IObjectPermissionsMaps(draft).get())
+    [PermissionsMap(u'draft.submitted')]
+
+    >>> draft.retract()
+
+    >>> list(IObjectPermissionsMaps(draft).get())
+    []
+    
+    >>> interfaces.ISubmittedDraftContent.providedBy(draft)
+    False
+
+    >>> draft.submit()
+    >>> draft.reject(u'')
+
+    >>> draft.submit()
+
+
+Publish by manager
+
+    >>> endInteraction()
+    >>> newInteraction(Participation(auth.getPrincipal('zope.mgr')))
+
+    >>> ct = draft.publish()
+
+    >>> ct
+    <zojax.content.draft.tests.content.Content2 ...>
+
+    >>> ct.__parent__ is root['container1']
+    True
+
+    >>> list(root['container1'].items())
+    [(u'Content2', <zojax.content.draft.tests.content.Content2 ...>)]
+
+    >>> del dcontainer['DraftContent']
+
+
+User1 can retract content
+
+    >>> endInteraction()
+    >>> newInteraction(Participation(auth.getPrincipal('zope.user1')))
+
+    >>> dtc = sm.getUtility(IDraftContentType, 'tests.content1')
+    >>> bdtc = dtc.__bind__(root['container1']['Content2'])
+
+    >>> dtc.isRetractable()
+    False
+
+    >>> bdtc.isRetractable()
+    False
+
+    >>> IPrincipalPermissionManager(
+    ...     root['container1']).grantPermissionToPrincipal(
+    ...         'test.RetractContent1', 'zope.user1')
+
+    >>> dtc.isRetractable()
+    False
+
+    >>> bdtc.isRetractable()
+    True
+
+    >>> origcontent = root['container1']['Content2']
+
+    >>> dtc.retract()
+    Traceback (most recent call last):
+    ...
+    DraftException: Cannot retract content.
+
+    >>> draft = bdtc.retract()
+    >>> draft.content is origcontent
+    True
+
+    >>> draft.shortname
+    u'Content2'
+
+    >>> draft.getLocation() is root['container1']
+    True
+
+    >>> list(root['container1'].items())
+    []
+
+    >>> dcontainer = component.queryMultiAdapter(
+    ...     (auth.getPrincipal('zope.user1'), dtc), interfaces.IDraftContainer)
+    >>> list(dcontainer.items())
+    [(u'Content2', <zojax.content.draft.draft.DraftContent ...>)]
+
+
+User1 allow add content to container2
+
+    >>> endInteraction()
+    >>> newInteraction(Participation(auth.getPrincipal('zope.user1')))
+
+    >>> draft = DraftContent(content.Content2())
+    >>> draft.title = u'Test title'
+    >>> draft.description = u'Test description'
+
+    >>> draft.location = ids.getId(root['container2'])
+    >>> draft.isPublishable()
+    True
+
+    >>> ct = draft.publish()
+
+    >>> ct
+    <zojax.content.draft.tests.content.Content2 ...>
+    >>> ct.__parent__ is root['container2']
+    True
+
+    >>> list(root['container2'].items())
+    [(u'Content2', <zojax.content.draft.tests.content.Content2 ...>)]
+
+
+Clean up
+
+    >>> del root['container1']
+    >>> del root['container2']
+
+    >>> endInteraction()
+    >>> setSite(None)

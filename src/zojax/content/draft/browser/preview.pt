@@ -1,0 +1,10 @@
+<div class="z-draft-preview">
+  <tal:block content="structure context/view/render" />
+
+  <tal:block tal:condition="nocall:context/activity">
+    <div class="z-draft-activity">
+      <h2>Activity</h2>
+      <tal:block content="structure context/activity/render" />
+    </div>
+  </tal:block>
+</div>

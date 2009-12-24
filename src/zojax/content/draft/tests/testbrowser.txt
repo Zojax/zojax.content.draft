@@ -1,0 +1,595 @@
+=============
+Browser tests
+=============
+
+    >>> from zope import interface, component, event
+    >>> from zope.app.component.hooks import setSite
+    >>> from zope.app.intid.interfaces import IIntIds
+    >>> from zope.lifecycleevent import ObjectModifiedEvent, ObjectCreatedEvent
+    >>> from zope.security.management import newInteraction, endInteraction
+    >>> from zope.security.management import checkPermission, getInteraction
+    >>> from zope.app.security.interfaces import IAuthentication
+
+    >>> from zojax.content.draft import interfaces
+    >>> from zojax.content.draft.tests import content
+
+    >>> root = getRootFolder()
+    >>> setSite(root)
+    >>> sm = root.getSiteManager()
+    >>> ids = component.getUtility(IIntIds)
+    >>> auth = component.getUtility(IAuthentication)
+
+Interaction
+
+    >>> class Participation:
+    ...     interaction = None
+    ...     def __init__(self, principal):
+    ...         self.principal = principal
+
+    >>> newInteraction(Participation(auth.getPrincipal('zope.mgr')))
+
+Personal space manager
+
+    >>> from zojax.personal.space.manager import PersonalSpaceManager
+    >>> from zojax.personal.space.interfaces import IPersonalSpaceManager
+
+    >>> people = PersonalSpaceManager()
+    >>> event.notify(ObjectCreatedEvent(people))
+
+    >>> root['people'] = people
+    >>> sm.registerUtility(root['people'], IPersonalSpaceManager)
+
+    >>> manager = root['people']
+    >>> manager.assignPersonalSpace(auth.getPrincipal('zope.mgr'))
+    >>> manager.assignPersonalSpace(auth.getPrincipal('zope.user1'))
+    >>> manager.assignPersonalSpace(auth.getPrincipal('zope.user2'))
+
+Content
+
+    >>> container = content.Container1(title=u'Container 1')
+    >>> event.notify(ObjectCreatedEvent(container))
+
+    >>> root['container1'] = container
+    >>> container1ID = ids.getId(root['container1'])
+
+    >>> container = content.Container2(title=u'Container 2')
+    >>> event.notify(ObjectCreatedEvent(container))
+
+    >>> root['container2'] = container
+    >>> container2ID = ids.getId(root['container2'])
+
+    >>> from zope.securitypolicy.interfaces import IPrincipalPermissionManager
+    >>> IPrincipalPermissionManager(
+    ...     root['container1']).grantPermissionToPrincipal(
+    ...         'test.SubmitContent2', 'zope.user1')
+    >>> IPrincipalPermissionManager(
+    ...     root['container2']).grantPermissionToPrincipal(
+    ...         'test.AddContent2', 'zope.user1')
+
+    >>> event.notify(ObjectModifiedEvent(root['container1']))
+    >>> event.notify(ObjectModifiedEvent(root['container2']))
+    >>> root['catalog'].updateIndexes()
+    >>> endInteraction()
+
+Browser tests
+
+    >>> from zope.testbrowser.testing import Browser
+    
+    >>> user1 = Browser()
+    >>> user1.addHeader("Authorization", "Basic user1:userpw1")
+    >>> user1.handleErrors = False
+
+User1 have submit permission to container1 and add permission to
+container2 for tests.content2
+
+    >>> user1.open('http://localhost/people/user1/content/')
+    >>> print user1.contents
+    <html>
+    ...
+    <h2 class="z-portlet-header">Your Stuff</h2>
+    <div class="z-portlet-body">
+      <div class="z-portlet-item even">
+         <img .../>
+         <a href="http://localhost/people/user1/content/">
+            Overview</a>
+      </div>
+      <div class="z-portlet-item odd">
+         <img .../>
+         <a href="http://localhost/people/user1/content/tests.content2/"
+            title="">
+            Content2
+         </a>
+      </div>
+    </div>
+    ...
+    </html>
+
+
+Add content
+-----------
+
+Location step
+
+    >>> user1.open('http://localhost/people/user1/content/draft/+/tests.content2/')
+    >>> print user1.contents
+    <html>
+    ...
+    <h1 class="z-draft-heading">
+       <span class="z-draft-heading-info">
+          Adding content:
+          Content2
+       </span>
+       <span class="z-draft-heading-location">
+          in
+          <span class="z-draft-heading-info">
+             Location is not selected
+          </span>
+       </span>
+    </h1>
+    ...
+    <label for="location-widgets-location" title="Please select location where you whould like to create content.">Content location</label>
+    ...
+    <a target="_blank" href="http://localhost/container1/">Container 1</a>
+    ...
+    <a target="_blank" href="http://localhost/container2/">Container 2</a>
+    ...
+    <div class="z-form-controls">
+      <span>
+        <hr />
+        <input id="form-buttons-savenext"
+           name="form.buttons.savenext"
+           class="z-wizard-forwardbutton button-field"
+           value="Next" type="submit" />
+        <input id="form-buttons-cancel"
+           name="form.buttons.cancel"
+           class="z-form-cancelbutton button-field"
+           value="Cancel" type="submit" />
+      </span>
+    </div>
+    ...
+    </html>
+
+    user1.getControl('Next').click()
+    print user1.contents
+    <html>
+    ...
+    ...<div class="statusWarningMessage">
+      There were some errors.
+    </div>
+    ...
+    <label for="location-widgets-location"
+           title="Please select location where you whould like to create content.">Content location</label>
+    <span class="z-form-fieldRequired">&nbsp;</span>
+    <div class="error">Required input is missing.</div>
+    ...
+    </html>
+
+    >>> user1.getControl(name="location.widgets.location:list").value = [str(container1ID)]
+    >>> user1.getControl('Next').click()
+    >>> print user1.url
+    http://localhost/people/user1/content/draft/+/tests.content2/index.html/content/
+
+    >>> draftContainer = root['people']['user1']['content']['draft']
+    >>> interfaces.IDraftContainer.providedBy(draftContainer)
+    True
+
+    >>> draft = draftContainer['draft']
+    >>> interfaces.IDraftContent.providedBy(draft)
+    True
+
+    >>> draft.getLocation() is root['container1']
+    True
+
+
+Content step
+
+    >>> print user1.contents
+    <html>
+    ...
+    <h1 class="z-draft-heading">
+        <span class="z-draft-heading-info">
+          Adding content: Content2
+        </span>
+        <span class="z-draft-heading-location">
+          in
+          <a href="http://localhost/container1/">Container 1</a>
+        </span>
+    </h1>
+    ...
+    <h2 class="z-form-label">Modify content</h2>
+    ...
+    <input id="form-buttons-previous"
+           name="form.buttons.previous"
+           class="z-wizard-previousbutton button-field"
+           value="Previous" type="submit" />
+    <input id="form-buttons-saveDraft"
+           name="form.buttons.saveDraft"
+           class="z-draft-savedraftbutton button-field"
+           value="Save as Draft" type="submit" />
+    <input id="form-buttons-cancel"
+           name="form.buttons.cancel"
+           class="z-form-cancelbutton button-field"
+           value="Cancel" type="submit" />
+    ...
+    </html>
+
+    >>> user1.getControl('Short Name').value = '@&*%content1'
+    >>> user1.getControl('Save as Draft').click()
+    >>> print user1.contents
+    <html>
+    ...<div class="statusWarningMessage">
+      Please fix indicated errors.
+      <br />
+      <ul>
+        <li>
+          <div class="error">Content name already in use.</div>
+        </li>
+      </ul>
+    </div>
+    ...
+    <label for="form-widgets-shortname" title="Should not contain spaces, underscores or mixed case. Short Name is part of the item's web address.">Short Name</label>
+    <div class="error">Names cannot begin with '+' or '@' or contain '/'</div>
+    <div class="z-form-help">Should not contain spaces, underscores or mixed case. Short Name is part of the item's web address.</div>
+    <div>
+       <input id="form-widgets-shortname"
+           name="form.widgets.shortname"
+           class="text-widget textline-field"
+           value="@&amp;*%content1" type="text" />
+    ...
+    </html>
+
+    >>> user1.getControl('Short Name').value = 'content1'
+    >>> user1.getControl('Save as Draft').click()
+    >>> print user1.contents
+    <html>
+    ...<div class="statusWarningMessage">
+      Please fix indicated errors.
+    </div>
+    <div class="statusWarningMessage">
+      Please complete following steps:
+      <br />
+      <ul>
+        <li>
+          <a href="http://localhost/people/user1/content/draft/+/tests.content2/index.html/content/">Content</a>
+        </li>
+      </ul>
+    </div>
+    ...
+    </html>
+
+
+Just save draft
+
+    >>> user1.getControl('Title').value = u'Content 1'
+    >>> user1.getControl('Short Name').value = 'content1'
+    >>> user1.getControl('Save as Draft').click()
+
+
+Browse draft container
+
+    >>> print user1.url
+    http://localhost/people/user1/content/draft/DraftContent/
+
+    >>> print user1.contents
+    <html>
+    ...<div class="statusMessage">Your Content2 draft has been added.</div>...
+    </html>
+
+    >>> user1.open('http://localhost/people/user1/content/draft/')
+    >>> print user1.contents
+    <html>
+    ...
+    <a href="http://localhost/people/user1/content/draft/DraftContent/">Content 1</a>
+    ...
+    <a href="http://localhost/container1/">Container 1</a>
+    ...
+    <td>Content2</td>
+    <td>
+      Draft
+    </td>
+    ...
+    </html>
+
+
+Modify draft
+
+    >>> user1.getLink('Content 1').click()
+    >>> print user1.contents
+    <html>
+    ...
+    <h1 class="z-draft-heading">
+        <span class="z-draft-heading-info">
+          Draft:
+          Content2
+        </span>
+        <span class="z-draft-heading-location">
+          in
+          <a href="http://localhost/container1/">Container 1</a>
+        </span>
+    </h1>
+    ...
+    <ul class="z-wizard-wizardsteps">
+      <li class="z-wizard-selected ">
+        <a href="http://localhost/people/user1/content/draft/DraftContent/index.html/view/">Preview</a>
+      </li>
+      <li class="">
+        <a href="http://localhost/people/user1/content/draft/DraftContent/index.html/location/">Location</a>
+      </li>
+      <li class="">
+        <a href="http://localhost/people/user1/content/draft/DraftContent/index.html/content/">Content</a>
+      </li>
+      <li class="">
+        <a href="http://localhost/people/user1/content/draft/DraftContent/index.html/activity/">Activity</a>
+      </li>
+    </ul>
+    ...
+    ...<h1 class="z-content-title">Content 1</h1>...
+    ...
+    <hr />
+    <input id="draft-edit-buttons-next"
+           name="draft.edit.buttons.next"
+           class="z-wizard-forwardbutton button-field"
+           value="Next" type="submit" />
+    <input id="draft-edit-buttons-submit"
+           name="draft.edit.buttons.submit"
+           class="z-draft-submitbutton button-field"
+           value="Submit" type="submit" />
+    <input id="draft-edit-buttons-remove"
+           name="draft.edit.buttons.remove"
+           class="z-draft-removebutton button-field"
+           value="Remove" type="submit" />
+    ...
+    </html>
+
+    >>> draft.content.title = u''
+
+    >>> user1.getControl('Submit').click()
+    >>> print user1.contents
+    <html>
+    ...
+    <div id="z-portal-statusmessage"><div class="statusWarningMessage">
+      Please complete following steps:
+      <br />
+      <ul>
+        <li>
+          <a href="http://localhost/people/user1/content/draft/DraftContent/index.html/content/">Content</a>
+        </li>
+      </ul>
+    </div>
+    </div>
+    ...
+    </html>
+
+    >>> draft.content.title = u'Content 1'
+    >>> user1.getControl('Submit').click()
+    >>> print user1.contents
+    <html>
+    ...<div class="statusMessage">Your Content2 draft has been submitted.</div>...
+    ...
+    <h1 class="z-draft-heading">
+        <span class="z-draft-heading-info">
+          Draft: Content2
+        </span>
+        <span class="z-draft-heading-location">
+          in
+          <a href="http://localhost/container1/">Container 1</a>
+        </span>
+    </h1>
+    ...
+    <h1 class="z-content-title">Content 1</h1>...
+    ...
+    <span>
+       <hr />
+       <input id="draft-submitted-buttons-retract"
+          name="draft.submitted.buttons.retract"
+          class="z-form-button button-field" value="Retract"
+          type="submit" />
+       <input id="draft-submitted-buttons-remove"
+          name="draft.submitted.buttons.remove"
+          class="z-draft-removebutton button-field"
+          value="Remove" type="submit" />
+    </span>
+    ...
+    </html>
+
+    >>> interfaces.ISubmittedDraftContent.providedBy(draft)
+    True
+
+    >>> user1.open('http://localhost/people/user1/content/draft/')
+    >>> print user1.contents
+    <html>
+    ...
+    <td>
+       <a href="http://localhost/people/user1/content/draft/DraftContent/">Content 1</a>
+    </td>
+    <td>
+       <a href="http://localhost/container1/">Container 1</a>
+    </td>
+    <td>Content2</td>
+    <td>
+       Submitted
+    </td>
+    ...
+    </html>
+
+    >>> user1.getLink('Content 1').click()
+    >>> user1.getControl('Retract').click()
+
+    >>> interfaces.ISubmittedDraftContent.providedBy(draft)
+    False
+
+    >>> user1.getControl('Submit').click()
+
+
+Reject by manager
+
+    >>> admin = Browser()
+    >>> admin.addHeader("Authorization", "Basic mgr:mgrpw")
+    >>> admin.handleErrors = False
+
+    >>> admin.open('http://localhost/people/manager/')
+    >>> admin.getLink('Review content').click()
+    >>> admin.getLink('Content 1').click()
+    >>> admin.getControl('Reject').click()
+
+    >>> user1.open('http://localhost/people/user1/content/draft/')
+    >>> user1.getLink('Content 1').click()
+
+
+Publish by manager
+
+    >>> user1.open('http://localhost/people/user1/content/draft/')
+    >>> user1.getLink('Content 1').click()
+    >>> user1.getControl('Submit').click()
+
+    >>> admin.open('http://localhost/people/manager/')
+    >>> admin.getLink('Review content').click()
+    >>> admin.getLink('Content 1').click()
+    >>> admin.getControl('Publish').click()
+
+    >>> list(root['container1'].items())
+    [(u'content1', <zojax.content.draft.tests.content.Content2 ...>)]
+
+
+Create and publish
+
+    >>> user1.open('http://localhost/people/user1/content/draft/+/tests.content2/')
+    >>> user1.getControl(name="location.widgets.location:list").value = [str(container2ID)]
+    >>> user1.getControl('Next').click()
+
+    >>> print user1.contents
+    <html>
+    ...
+    <span>
+        <hr />
+        <input id="form-buttons-previous"
+           name="form.buttons.previous"
+           class="z-wizard-previousbutton button-field"
+           value="Previous" type="submit" />
+        <input id="form-buttons-saveDraft"
+           name="form.buttons.saveDraft"
+           class="z-draft-savedraftbutton button-field"
+           value="Save as Draft" type="submit" />
+        <input id="form-buttons-publish"
+           name="form.buttons.publish"
+           class="z-draft-publishbutton button-field"
+           value="Publish" type="submit" />
+        <input id="form-buttons-cancel"
+           name="form.buttons.cancel"
+           class="z-form-cancelbutton button-field"
+           value="Cancel" type="submit" />
+    </span>
+    ...
+    </html>
+
+    >>> user1.getControl('Short Name').value = 'content2'
+    >>> user1.getControl('Publish').click()
+    >>> print user1.contents
+    <html>
+    ...
+    <div class="statusWarningMessage">
+      Please complete following steps:
+      <br />
+      <ul>
+        <li>
+          <a href="http://localhost/people/user1/content/draft/+/tests.content2/index.html/content/">Content</a>
+        </li>
+      </ul>
+    </div>
+    ...
+    </html>
+
+    >>> user1.getControl('Title').value = u'Content 2'
+    >>> user1.getControl('Publish').click()
+
+    >>> user1.url
+    'http://localhost/container2/content2/'
+
+    >>> print user1.contents
+    <html>
+    ...Your Content2 has been published...
+    </html>
+
+    >>> list(root['container2'].items())
+    [(u'content2', <zojax.content.draft.tests.content.Content2 ...>)]
+
+
+Save and continue
+
+    >>> user1.open('http://localhost/people/user1/content/draft/+/tests.content2/')
+    >>> user1.getControl(name="location.widgets.location:list").value = [str(container1ID)]
+    >>> user1.getControl('Next').click()
+
+    >>> user1.getControl('Title').value = u'Content 2'
+    >>> user1.getControl('Short Name').value = 'content2'
+    >>> user1.getControl('Save as Draft').click()
+
+    >>> user1.url
+    'http://localhost/people/user1/content/draft/DraftContent/'
+
+    >>> user1.open('http://localhost/people/user1/content/draft/')
+
+
+Remove draft
+
+    >>> user1.getControl(name="draftId:list").value = ["DraftContent"]
+    >>> user1.getControl('Remove').click()
+
+    >>> len(draftContainer)
+    0
+
+Remove draft from edit form
+
+    >>> user1.open('http://localhost/people/user1/content/draft/+/tests.content2/')
+    >>> user1.getControl(name="location.widgets.location:list").value = [str(container1ID)]
+    >>> user1.getControl('Next').click()
+
+    >>> user1.getControl('Title').value = u'Content 2'
+    >>> user1.getControl('Short Name').value = 'content2'
+    >>> user1.getControl('Save as Draft').click()
+
+    >>> len(draftContainer)
+    1
+
+    >>> user1.getControl('Remove').click()
+
+    >>> len(draftContainer)
+    0
+
+Remove submitted draft from edit form
+
+    >>> user1.open('http://localhost/people/user1/content/draft/+/tests.content2/')
+    >>> user1.getControl(name="location.widgets.location:list").value = [str(container1ID)]
+    >>> user1.getControl('Next').click()
+
+    >>> user1.getControl('Title').value = u'Content 2'
+    >>> user1.getControl('Short Name').value = 'content2'
+    >>> user1.getControl('Save as Draft').click()
+    >>> user1.getControl('Submit').click()
+
+    >>> len(draftContainer)
+    1
+
+    >>> user1.getControl('Remove').click()
+
+    >>> len(draftContainer)
+    0
+
+
+Publish
+
+    >>> admin.open('http://localhost/people/manager/content/')
+    >>> admin.getLink('Content2').click()
+    >>> admin.getLink('Create: Content2').click()
+    >>> admin.getControl(name="location.widgets.location:list").value = [str(container1ID)]
+    >>> admin.getControl('Next').click()
+    >>> admin.getControl('Title').value = u'Content 2'
+    >>> admin.getControl('Short Name').value = 'content2'
+    >>> admin.getControl('Save as Draft').click()
+    >>> admin.getControl('Publish').click()
+
+    >>> list(root['container1'].items())
+    [(u'content1', <zojax.content.draft.tests.content.Content2 ...>), (u'content2', <zojax.content.draft.tests.content.Content2 ...>)]
+
+    >>> setSite(None)
+

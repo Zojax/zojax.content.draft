@@ -1,0 +1,149 @@
+====================================================================
+'draftSubmitTo' index and 'zojax.content.draft.locations' vocabulary
+====================================================================
+
+    >>> from zope import interface, component, event
+    >>> from zope.lifecycleevent import ObjectModifiedEvent, ObjectCreatedEvent
+    >>> from zope.security.management import newInteraction, endInteraction
+    >>> from zope.security.management import checkPermission, getInteraction
+    >>> from zope.app.security.interfaces import IAuthentication
+
+    >>> from zojax.content.draft.tests import content
+
+    >>> auth = component.getUtility(IAuthentication)
+
+Interaction
+
+    >>> class Participation:
+    ...     interaction = None
+    ...     def __init__(self, principal):
+    ...         self.principal = principal
+
+    >>> newInteraction(Participation(auth.getPrincipal('zope.mgr')))
+
+
+Create content
+
+    >>> root = getRootFolder()
+
+    >>> container = content.Container1(title=u'Container 1')
+    >>> event.notify(ObjectCreatedEvent(container))
+
+    >>> root['container1'] = container
+
+    >>> container = content.Container2(title=u'Container 2')
+    >>> event.notify(ObjectCreatedEvent(container))
+
+    >>> root['container2'] = container
+
+
+Index
+-----
+
+    >>> from zojax.content.draft.indexes import DraftSubmitTo
+
+Both 'tests.content1' and 'tests2.content2' can be added to container1
+
+    >>> DraftSubmitTo(root['container1']).value
+     [('test.AddContent2', 'zope.Manager'), ('test.AddContent2', 'user:zope.mgr'), ('test.AddContent1', 'zope.Manager'), ('test.AddContent1', 'user:zope.mgr'), ('test.SubmitContent1', 'zope.Manager'), ('test.SubmitContent1', 'user:zope.mgr'), ('test.SubmitContent2', 'zope.Manager'), ('test.SubmitContent2', 'user:zope.mgr')]
+
+But only 'tests2.content2' can be added to container2
+
+    >>> DraftSubmitTo(root['container2']).value
+    [('test.AddContent2', 'zope.Manager'), ('test.AddContent2', 'user:zope.mgr'), ('test.SubmitContent2', 'zope.Manager'), ('test.SubmitContent2', 'user:zope.mgr')]
+
+
+Allow add content2 to zope.user1
+
+    >>> from zope.securitypolicy.interfaces import IPrincipalPermissionManager
+    >>> IPrincipalPermissionManager(
+    ...     root['container2']).grantPermissionToPrincipal(
+    ...         'test.AddContent2', 'zope.user1')
+
+    >>> DraftSubmitTo(root['container2']).value
+    [('test.AddContent2', 'user:zope.user1'), ('test.AddContent2', 'zope.Manager'), ('test.AddContent2', 'user:zope.mgr'), ('test.SubmitContent2', 'zope.Manager'), ('test.SubmitContent2', 'user:zope.mgr')]
+
+
+Vocabulary
+----------
+
+locations vocabulary works only for DraftContent
+
+    >>> from zojax.content.draft.draft import DraftContent
+    >>> from zojax.content.draft.vocabulary import LocationsVocabulary
+
+    >>> vocabulary = LocationsVocabulary()
+
+    >>> voc = vocabulary(root['container1'])
+    >>> len(voc)
+    0
+
+    >>> draft = DraftContent(content.Content1())
+
+Manager can add Content1 only to container1
+
+    >>> for term in vocabulary(draft):
+    ...     print '"%s"'%term.token, '"%s"'%term.title.name
+    "..." "Container 1"
+
+
+But Content2 manager can add to both containers
+
+    >>> draft = DraftContent(content.Content2())
+
+    >>> for term in vocabulary(draft):
+    ...     print '"%s"'%term.token, '"%s"'%term.title.name
+    "..." "Container 1"
+    "..." "Container 2"
+
+
+Vocabulary for user
+-------------------
+
+    >>> endInteraction()
+    >>> newInteraction(Participation(auth.getPrincipal('zope.user2')))
+
+    >>> voc = vocabulary(draft)
+    >>> len(voc)
+    0
+
+let's give submit permission for zope.user2
+
+    >>> endInteraction()
+    >>> newInteraction(Participation(auth.getPrincipal('zope.mgr')))
+
+    >>> IPrincipalPermissionManager(
+    ...     root['container2']).grantPermissionToPrincipal(
+    ...         'test.SubmitContent2', 'zope.user2')
+    >>> event.notify(ObjectModifiedEvent(root['container2']))
+
+    >>> endInteraction()
+    >>> newInteraction(Participation(auth.getPrincipal('zope.user2')))
+
+    >>> for term in vocabulary(draft):
+    ...     print '"%s"'%term.token, '"%s"'%term.title.name
+    "..." "Container 2"
+
+    >>> endInteraction()
+    >>> newInteraction(Participation(auth.getPrincipal('zope.mgr')))
+
+    >>> IPrincipalPermissionManager(
+    ...     root['container1']).grantPermissionToPrincipal(
+    ...         'test.AddContent2', 'zope.user2')
+    >>> event.notify(ObjectModifiedEvent(root['container1']))
+
+    >>> endInteraction()
+    >>> newInteraction(Participation(auth.getPrincipal('zope.user2')))
+
+    >>> for term in vocabulary(draft):
+    ...     print '"%s"'%term.token, '"%s"'%term.title.name
+    "..." "Container 1"
+    "..." "Container 2"
+
+tests
+
+    >>> print DraftSubmitTo(draft.content).value
+    None
+
+    >>> endInteraction()
+    

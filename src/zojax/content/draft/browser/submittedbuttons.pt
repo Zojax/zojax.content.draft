@@ -1,0 +1,11 @@
+<div class="z-form-controls" tal:condition="context/actions|nothing">
+  <span tal:condition="context/actions/values">
+    <hr />
+    <div class="z-form-field" tal:condition="context/isPublishable" >
+      <label>Comment</label>: <input type="text" name="form.action.comment"
+				     tal:attributes="value request/form.action.comment|nothing"/>
+    </div>
+    <input tal:repeat="action context/actions/values"
+	   tal:replace="structure action/render" />
+  </span>
+</div>

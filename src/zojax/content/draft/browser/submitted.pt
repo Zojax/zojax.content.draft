@@ -1,0 +1,28 @@
+<h1 class="z-form-label">
+  Draft: <tal:block content="view/contenttype/title" /></h1>
+<div class="z-form-description"
+     tal:content="view/contenttype/description"></div>
+
+<div class="z-form z-form-standard" tal:define="context nocall:view">
+  <form action="." method="post" enctype="multipart/form-data" 
+	tal:attributes="method context/method;
+			enctype context/enctype;
+			acceptCharset context/acceptCharset;
+			accept context/accept;
+			action context/action;
+			name context/name;
+			id context/id">
+    <div class="z-frame">
+      <tal:block tal:content="structure pagelet:form.viewspace" />
+      
+      <tal:block tal:repeat="context context/forms"
+		 tal:content="structure pagelet:form" />
+      
+      <tal:block tal:repeat="context context/views"
+		 tal:content="structure context/render" />
+    </div>
+      
+    <tal:block tal:content="structure pagelet:form.buttons" />
+
+  </form>
+</div>

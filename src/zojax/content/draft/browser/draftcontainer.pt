@@ -1,0 +1,58 @@
+<tal:block tal:define="drafts view/listDrafts" 
+	   i18n:domain="zojax.content.draft">
+  <h1>Your draft items</h1>
+  <div class="z-page-description">List of all your draft items.</div>
+  <br />
+
+  <tal:block tal:condition="drafts">
+    <form action="index.html" method="post">
+      <table class="z-table">
+	<thead>
+	  <tr>
+	    <th></th>
+	    <th></th>
+	    <th>Title</th>
+	    <th>Location</th>
+	    <th>Type</th>
+	    <th>Status</th>
+	    <th>Last Modified</th>
+	  </tr>
+	</thead>
+	<tbody>
+	  <tr tal:repeat="draft drafts"
+	      tal:attributes="class python:repeat['draft'].odd() and 'odd' or 'even'">
+	    <td>
+	      <input type="checkbox" name="draftId:list" tal:attributes="value draft/name" />
+	    </td>
+	    <td>
+	      <img tal:replace="structure draft/icon" tal:condition="draft/icon" />
+	    </td>
+	    <td>
+	      <a tal:attributes="href draft/url" 
+		  i18n:translate="" tal:content="draft/title"></a>
+	      <div class="z-content-description"
+		    i18n:translate="" tal:content="draft/description"
+		   tal:condition="draft/description"></div>
+	    </td>
+	    <td>
+	      <a tal:omit-tag="not:draft/locationURL"
+		 tal:attributes="href draft/locationURL"
+		 tal:content="draft/location" i18n:translate=""></a>
+	    </td>
+	    <td tal:content="draft/contentType/title" i18n:translate=""></td>
+	    <td>
+	      <tal:block condition="not:draft/status">Draft</tal:block>
+	      <tal:block condition="draft/status">Submitted</tal:block>
+	    </td>
+	    <td tal:content="structure formatter:date,medium:draft/modified"></td>
+	  </tr>
+	</tbody>
+      </table>
+      <div class="z-form-controls">
+	<hr />
+	<input type="submit" class="z-form-removebutton" 
+	       value="Remove" name="form.button.remove" />
+      </div>
+    </form>
+  </tal:block>
+</tal:block>

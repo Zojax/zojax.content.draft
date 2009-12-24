@@ -1,0 +1,101 @@
+<configure
+   xmlns="http://namespaces.zope.org/zope"
+   xmlns:zojax="http://namespaces.zope.org/zojax"
+   i18n_domain="zojax.content.draft">
+
+  <!-- adding content -->
+  <zojax:pagelet
+     name="+"
+     for="..interfaces.IDraftContainer"
+     provides="zojax.content.browser.interfaces.IContentAdding"
+     class=".adding.Adding"
+     permission="zope.View" />
+
+  <!-- add draft wizard -->
+  <zojax:pagelet
+     name="index.html"
+     for="..interfaces.IDraftContentType"
+     class=".adding.AddDraftWizard"
+     permission="zope.View" />
+
+  <zojax:layout
+     layout="."
+     for=".interfaces.IAddDraftWizard"
+     template="wizardlayout.pt"
+     class=".wizardlayout.WizardLayout" />
+
+  <!-- add content wizard -->
+  <zojax:pagelet
+     name="index.html"
+     for="..interfaces.IDraftedContentType"
+     class=".adding.AddContentWizard"
+     allowed_attributes="draft"
+     permission="zope.View" />
+
+  <zojax:layout
+     layout="."
+     for=".interfaces.IAddContentWizard"
+     template="wizardlayout.pt"
+     class=".wizardlayout.WizardLayout" />
+
+  <!-- add draft steps -->
+  <zojax:pagelet
+     name="location"
+     type="wizard.step"
+     for="zojax.content.type.interfaces.IContent
+	  zojax.content.draft.browser.interfaces.IAddDraftWizard"
+     class=".location.ContentLocationStep"
+     weight="10" />
+
+  <!-- content step -->
+  <zojax:pagelet
+     name="content"
+     type="wizard.step"
+     for="zojax.content.type.interfaces.IContent
+	  zojax.content.draft.browser.interfaces.IAddDraftWizard"
+     class=".content.ContentStep"
+     weight="100" />
+
+  <zojax:pagelet
+     name="content"
+     type="wizard.step"
+     for="zojax.content.type.interfaces.IContent
+	  zojax.content.draft.browser.interfaces.IAddContentWizard"
+     class="zojax.content.forms.content.ContentStep"
+     weight="100" />
+
+  <!-- sharring step -->
+  <zojax:pagelet
+     name="security"
+     type="wizard.step"
+     for="zojax.content.type.interfaces.IContent
+	  zojax.content.draft.browser.interfaces.IAddDraftWizard"
+     class="zojax.content.forms.security.ContentSecurityStep"
+     weight="200" />
+
+  <zojax:pagelet
+     name="security"
+     type="wizard.step"
+     for="zojax.content.type.interfaces.IContent
+	  zojax.content.draft.browser.interfaces.IAddContentWizard"
+     class="zojax.content.forms.security.ContentSecurityStep"
+     weight="200" />
+
+  <!-- content presentation step -->
+  <zojax:pagelet
+     name="presentation"
+     type="wizard.step"
+     for="zojax.content.type.interfaces.IContent
+	  zojax.content.draft.browser.interfaces.IAddDraftWizard"
+     class="zojax.content.forms.presentation.ContentPresentationStep"
+     weight="300" />
+
+  <zojax:pagelet
+     name="presentation"
+     type="wizard.step"
+     for="zojax.content.type.interfaces.IContent
+	  zojax.content.draft.browser.interfaces.IAddContentWizard"
+     class="zojax.content.forms.presentation.ContentPresentationStep"
+     weight="300" />
+
+</configure>

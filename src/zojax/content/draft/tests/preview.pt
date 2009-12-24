@@ -1,0 +1,2 @@
+<h1 class="z-content-title" tal:content="context/title"></h1>
+<div class="z-content-description" tal:content="context/description"></div>
