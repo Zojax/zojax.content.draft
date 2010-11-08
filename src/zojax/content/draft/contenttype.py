@@ -133,8 +133,9 @@ class DraftContentType(ContentType):
 @component.adapter(IDraftContent)
 @interface.implementer(IContentType)
 def draftContentType(draftContent):
-    ct = IContentType(draftContent.content)
-    return getUtility(IDraftContentType, ct.name)
+    ct = IContentType(draftContent.content, None)
+    if ct is not None:
+        return getUtility(IDraftContentType, ct.name)
 
 
 class DraftContainerType(ContentType):
