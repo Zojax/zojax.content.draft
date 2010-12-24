@@ -26,7 +26,7 @@ from zope.schema.vocabulary import SimpleTerm, SimpleVocabulary
 from z3c.breadcrumb.interfaces import IBreadcrumb
 from zojax.catalog.interfaces import ICatalog
 from zojax.catalog.utils import getRequest, listAllowedRoles
-from zojax.content.type.interfaces import IContentType
+from zojax.content.type.interfaces import IContentType, IItem
 from zojax.content.type.constraints import checkContentType
 from zojax.content.draft.interfaces import _, IDraftContent
 
@@ -90,7 +90,7 @@ class LocationsVocabulary(object):
             if allow:
                 contents.append(
                     (getPath(content),
-                     content.title, ids.getId(content), content))
+                     IItem(content).title, ids.getId(content), content))
 
         contents.sort()
 
