@@ -20,10 +20,12 @@ from zope.component import getUtility, queryMultiAdapter
 from zope.app.intid.interfaces import IIntIds
 from zope.traversing.browser import absoluteURL
 from zope.dublincore.interfaces import ICMFDublinCore
+from zope.proxy import removeAllProxies
 
 from zojax.content.type.interfaces import IContentType
 from zojax.statusmessage.interfaces import IStatusMessage
-from zojax.content.draft.interfaces import _, ISubmittedDraftContent
+from zojax.content.draft.interfaces import _, ISubmittedDraftContent,\
+    DraftException
 
 
 class DraftContainerView(object):
@@ -79,3 +81,23 @@ class DraftContainerView(object):
 
                 IStatusMessage(request).add(
                     _('Selected draft items have been removed.'))
+
+        if 'form.button.publish' in request:
+            ids = request.get('draftId', ())
+            if not ids:
+                IStatusMessage(request).add(_('Please select draft items.'))
+            else:
+                for id in request.get('draftId', ()):
+                    if id in context:
+                        draft = context[id]
+                        try:
+                            content = draft.publish()
+                        except DraftException, err:
+                            IStatusMessage(request).add(str(err), 'error')
+                            return
+                
+                        draft = removeAllProxies(draft)
+                        del draft.__parent__[draft.__name__]
+
+                IStatusMessage(request).add(
+                    _('Selected draft items have been published.'))
