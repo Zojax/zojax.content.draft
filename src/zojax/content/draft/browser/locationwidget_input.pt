@@ -12,11 +12,13 @@
 			   tabindex view/tabindex;" />
     <span>
       <tal:block tal:condition="item/icon" tal:content="structure item/icon" />
-      <a tal:content="structure item/breadcrum/name" target="_blank"
+      <a tal:content="structure item/breadcrum/name" target="_blank" i18n:translate=""
 	 tal:attributes="href item/breadcrum/url; title item/description">label</a>
       <tal:block tal:condition="item/space">
+        <tal:block i18n:translate="">
 	in
-	<a tal:content="structure item/space" target="_blank"
+	</tal:block>
+	<a tal:content="structure item/space" target="_blank" i18n:translate=""
 	   tal:attributes="href item/spaceUrl; title item/spaceDescription">label</a>
       </tal:block>
     </span>

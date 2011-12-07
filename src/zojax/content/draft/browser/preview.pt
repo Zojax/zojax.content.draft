@@ -3,7 +3,7 @@
 
   <tal:block tal:condition="nocall:context/activity">
     <div class="z-draft-activity">
-      <h2>Activity</h2>
+      <h2 i18n:translate="">Activity</h2>
       <tal:block content="structure context/activity/render" />
     </div>
   </tal:block>

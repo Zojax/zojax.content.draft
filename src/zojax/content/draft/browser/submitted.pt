@@ -1,5 +1,5 @@
-<h1 class="z-form-label">
-  Draft: <tal:block content="view/contenttype/title" /></h1>
+<h1 class="z-form-label" i18n:translate="">
+  Draft: <tal:block content="view/contenttype/title" i18n:name="title" /></h1>
 <div class="z-form-description"
      tal:content="view/contenttype/description"></div>
 

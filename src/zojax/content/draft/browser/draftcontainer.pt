@@ -1,7 +1,7 @@
 <tal:block tal:define="drafts view/listDrafts" 
 	   i18n:domain="zojax.content.draft">
-  <h1>Your draft items</h1>
-  <div class="z-page-description">List of all your draft items.</div>
+  <h1 i18n:translate="">Your draft items</h1>
+  <div class="z-page-description" i18n:translate="">List of all your draft items.</div>
   <br />
 
   <tal:block tal:condition="drafts">
@@ -11,11 +11,11 @@
 	  <tr>
 	    <th></th>
 	    <th></th>
-	    <th>Title</th>
-	    <th>Location</th>
-	    <th>Type</th>
-	    <th>Status</th>
-	    <th>Last Modified</th>
+	    <th i18n:translate="">Title</th>
+	    <th i18n:translate="">Location</th>
+	    <th i18n:translate="">Type</th>
+	    <th i18n:translate="">Status</th>
+	    <th i18n:translate="">Last Modified</th>
 	  </tr>
 	</thead>
 	<tbody>
@@ -50,9 +50,9 @@
       </table>
       <div class="z-form-controls">
 	<hr />
-	<input type="submit" class="z-form-removebutton" 
+	<input type="submit" class="z-form-removebutton"  i18n:attributes="value"
 	       value="Remove" name="form.button.remove" />
-  <input type="submit" class="z-form-button" 
+  <input type="submit" class="z-form-button"  i18n:attributes="value"
          value="Publish" name="form.button.publish" />
       </div>
     </form>

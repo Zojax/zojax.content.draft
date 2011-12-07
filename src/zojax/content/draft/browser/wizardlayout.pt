@@ -4,18 +4,20 @@
       <tal:block content="layoutcontext/label"/>
       <tal:block content="layoutcontext/title|nothing" />
     </span>
-    <span class="z-draft-heading-location">
+    <span class="z-draft-heading-location" i18n:translate="">
       in
-      <a href="#" tal:condition="layout/locationUrl"
+      <a href="#" tal:condition="layout/locationUrl" i18n:name="link" 
 	 tal:attributes="href string:${layout/locationUrl}"
 	 tal:content="layout/locationTitle">Location</a>
-      <tal:block tal:condition="layout/containerUrl">
+      <tal:block tal:condition="layout/containerUrl" i18n:name="contain_link" >
 	<a href="#"
-	   tal:attributes="href string:${layout/containerUrl}">
-	  (<tal:block content="layout/containerTitle"/>)</a>
+	   tal:attributes="href string:${layout/containerUrl}" i18n:translate="">
+	  (<tal:block content="layout/containerTitle" i18n:name="container_title" />)</a>
       </tal:block>
-      <span tal:condition="not:layout/locationUrl" class="z-draft-heading-info">
+      <span tal:condition="not:layout/locationUrl" class="z-draft-heading-info" i18n:name="location" >
+	<tal:block i18n:translate="">
 	Location is not selected
+	</tal:block>
       </span>
     </span>
   </h1>
