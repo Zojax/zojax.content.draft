@@ -29,17 +29,17 @@
 	    </td>
 	    <td>
 	      <a tal:attributes="href draft/url" 
-		  i18n:translate="" tal:content="draft/title"></a>
+		 tal:content="draft/title"></a>
 	      <div class="z-content-description"
-		    i18n:translate="" tal:content="draft/description"
+		   tal:content="draft/description"
 		   tal:condition="draft/description"></div>
 	    </td>
 	    <td>
 	      <a tal:omit-tag="not:draft/locationURL"
 		 tal:attributes="href draft/locationURL"
-		 tal:content="draft/location" i18n:translate=""></a>
+		 tal:content="draft/location"></a>
 	    </td>
-	    <td tal:content="draft/contentType/title" i18n:translate=""></td>
+	    <td tal:content="draft/contentType/title"></td>
 	    <td>
 	      <tal:block condition="not:draft/status">Draft</tal:block>
 	      <tal:block condition="draft/status">Submitted</tal:block>
