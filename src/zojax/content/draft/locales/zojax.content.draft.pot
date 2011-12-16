@@ -1,0 +1,247 @@
+##############################################################################
+#
+# Copyright (c) 2003-2004 Zope Corporation and Contributors.
+# All Rights Reserved.
+#
+# This software is subject to the provisions of the Zope Public License,
+# Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
+# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
+# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
+# FOR A PARTICULAR PURPOSE.
+#
+##############################################################################
+msgid ""
+msgstr ""
+"Project-Id-Version: Development/Unknown\n"
+"POT-Creation-Date: Sun Dec 11 11:26:34 2011\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Zope 3 Developers <zope3-dev@zope.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: zope/app/locales/extract.py\n"
+
+#: src/zojax/content/draft/browser/adding.py:108
+#. Default: ""
+msgid "Your ${type_title} draft has been added."
+msgstr ""
+
+#: src/zojax/content/draft/browser/adding.py:139
+#: src/zojax/content/draft/browser/draft.py:85
+#. Default: ""
+msgid "Your ${type_title} draft has been submitted."
+msgstr ""
+
+#: src/zojax/content/draft/browser/adding.py:174
+#: src/zojax/content/draft/browser/draft.py:57
+#. Default: ""
+msgid "Your ${type_title} has been published."
+msgstr ""
+
+#: src/zojax/content/draft/browser/adding.py:44
+msgid "Adding content:"
+msgstr ""
+
+#: src/zojax/content/draft/browser/adding.py:47
+msgid "Content creation has been canceled."
+msgstr ""
+
+#: src/zojax/content/draft/browser/breadcrumb.py:29
+#: src/zojax/content/draft/browser/draftcontainer.pt:3
+msgid "Your draft items"
+msgstr ""
+
+#: src/zojax/content/draft/browser/content.py:87
+msgid "Content name already in use."
+msgstr ""
+
+#: src/zojax/content/draft/browser/draft.py:97
+#: src/zojax/content/draft/browser/submitted.py:100
+#. Default: ""
+msgid "${type_title} draft has been removed."
+msgstr ""
+
+#: src/zojax/content/draft/browser/draftcontainer.pt:16
+msgid "Type"
+msgstr ""
+
+#: src/zojax/content/draft/browser/draftcontainer.pt:17
+msgid "Status"
+msgstr ""
+
+#: src/zojax/content/draft/browser/draftcontainer.pt:18
+msgid "Last Modified"
+msgstr ""
+
+#: src/zojax/content/draft/browser/draftcontainer.pt:4
+msgid "List of all your draft items."
+msgstr ""
+
+#: src/zojax/content/draft/browser/draftcontainer.py:103
+msgid "Selected draft items have been published."
+msgstr ""
+
+#: src/zojax/content/draft/browser/draftcontainer.py:49
+msgid "Unknown"
+msgstr ""
+
+#: src/zojax/content/draft/browser/draftcontainer.py:55
+msgid "[No title]"
+msgstr ""
+
+#: src/zojax/content/draft/browser/draftcontainer.py:76
+#: src/zojax/content/draft/browser/draftcontainer.py:88
+msgid "Please select draft items."
+msgstr ""
+
+#: src/zojax/content/draft/browser/draftcontainer.py:83
+msgid "Selected draft items have been removed."
+msgstr ""
+
+#: src/zojax/content/draft/browser/interfaces.py:114
+#: src/zojax/content/draft/browser/interfaces.py:154
+msgid "Previous"
+msgstr ""
+
+#: src/zojax/content/draft/browser/interfaces.py:119
+#: src/zojax/content/draft/browser/interfaces.py:171
+msgid "Next"
+msgstr ""
+
+#: src/zojax/content/draft/browser/interfaces.py:124
+msgid "Save as Draft"
+msgstr ""
+
+#: src/zojax/content/draft/browser/interfaces.py:129
+#: src/zojax/content/draft/browser/interfaces.py:177
+#: src/zojax/content/draft/browser/interfaces.py:218
+#: src/zojax/content/draft/browser/draftcontainer.pt:55
+msgid "Publish"
+msgstr ""
+
+#: src/zojax/content/draft/browser/interfaces.py:134
+#: src/zojax/content/draft/browser/interfaces.py:183
+msgid "Submit"
+msgstr ""
+
+#: src/zojax/content/draft/browser/interfaces.py:159
+msgid "Save & Next"
+msgstr ""
+
+#: src/zojax/content/draft/browser/interfaces.py:165
+msgid "Save"
+msgstr ""
+
+#: src/zojax/content/draft/browser/interfaces.py:189
+#: src/zojax/content/draft/browser/interfaces.py:223
+#: src/zojax/content/draft/browser/draftcontainer.pt:53
+msgid "Remove"
+msgstr ""
+
+#: src/zojax/content/draft/browser/interfaces.py:208
+msgid "Retract"
+msgstr ""
+
+#: src/zojax/content/draft/browser/interfaces.py:213
+msgid "Reject"
+msgstr ""
+
+#: src/zojax/content/draft/browser/location.py:33
+#: src/zojax/content/draft/browser/draftcontainer.pt:15
+msgid "Location"
+msgstr ""
+
+#: src/zojax/content/draft/browser/locationwidget.py:42
+msgid "no value"
+msgstr ""
+
+#: src/zojax/content/draft/browser/locationwidget.py:43
+msgid "select a value ..."
+msgstr ""
+
+#: src/zojax/content/draft/browser/locationwidget_input.pt:18
+msgid "in"
+msgstr ""
+
+#: src/zojax/content/draft/browser/preview.pt:6
+msgid "Activity"
+msgstr ""
+
+#: src/zojax/content/draft/browser/submitted.pt:2
+msgid "Draft: ${title}"
+msgstr ""
+
+#: src/zojax/content/draft/browser/submitted.py:65
+#. Default: ""
+msgid "${type_title} has been published."
+msgstr ""
+
+#: src/zojax/content/draft/browser/submitted.py:78
+#. Default: ""
+msgid "${type_title} has been rejected."
+msgstr ""
+
+#: src/zojax/content/draft/browser/submitted.py:89
+#. Default: ""
+msgid "Your ${type_title} has been retracted."
+msgstr ""
+
+#: src/zojax/content/draft/browser/submittedbuttons.pt:5
+msgid "Comment"
+msgstr ""
+
+#: src/zojax/content/draft/browser/wizard.py:39
+msgid "Draft:"
+msgstr ""
+
+#: src/zojax/content/draft/browser/wizardlayout.pt:15
+msgid "(${container_title})"
+msgstr ""
+
+#: src/zojax/content/draft/browser/wizardlayout.pt:17
+msgid "in ${link} ${contain_link} ${location}"
+msgstr ""
+
+#: src/zojax/content/draft/browser/wizardlayout.pt:18
+msgid "Location is not selected"
+msgstr ""
+
+#: src/zojax/content/draft/configure.zcml:14
+msgid "Draft Container"
+msgstr ""
+
+#: src/zojax/content/draft/interfaces.py:36
+#: src/zojax/content/draft/browser/draftcontainer.pt:14
+msgid "Title"
+msgstr ""
+
+#: src/zojax/content/draft/interfaces.py:37
+msgid "May contain spaces and special characters."
+msgstr ""
+
+#: src/zojax/content/draft/interfaces.py:42
+msgid "Description"
+msgstr ""
+
+#: src/zojax/content/draft/interfaces.py:43
+msgid "A short summary of the content item."
+msgstr ""
+
+#: src/zojax/content/draft/interfaces.py:79
+msgid "Content location"
+msgstr ""
+
+#: src/zojax/content/draft/interfaces.py:80
+msgid "Please select location where you whould like to create content."
+msgstr ""
+
+#: src/zojax/content/draft/interfaces.py:86
+msgid "Short Name"
+msgstr ""
+
+#: src/zojax/content/draft/interfaces.py:87
+msgid "Should not contain spaces, underscores or mixed case. Short Name is part of the item's web address."
+msgstr ""
+
