@@ -18,6 +18,9 @@ $Id$
 from zope import schema, interface
 from zope.i18nmessageid import MessageFactory
 from zope.component.interfaces import IObjectEvent
+
+from z3c.form.interfaces import IWidget
+
 from zojax.content.type.interfaces import IContentType, IDraftedContent
 
 _ = MessageFactory('zojax.content.draft')
@@ -75,12 +78,11 @@ class ISubmittedDraftContent(interface.Interface):
 class IDraftLocation(interface.Interface):
     """Draft location."""
 
-    location = schema.Choice(
+    location = schema.Int(
         title = _(u'Content location'),
         description = _('Please select location where you whould like to create content.'),
-        vocabulary = 'zojax.content.draft.locations',
         required = True,
-        missing_value = u'')
+        default = 0)
 
     shortname = schema.TextLine(
         title = _(u'Short Name'),
@@ -154,3 +156,11 @@ class IDraftPublishedEvent(IDraftStatusEvent):
 
 class IObjectRetractedEvent(IDraftEvent):
     """ content retracted event """
+
+
+class ILocationWidget(IWidget):
+    """ location widget """
+
+
+class ILocationField(interface.Interface):
+    """ location id field """

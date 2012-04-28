@@ -134,7 +134,7 @@
      type="stylesheet" file="styles.css" filetype="zrt" />
 
   <!-- buttons -->
-  <adapter 
+  <adapter
      provides="z3c.form.interfaces.IButtonAction"
      factory=".buttons.SubmitButtonAction" />
 
@@ -142,7 +142,7 @@
     <allow attributes="render" />
   </class>
 
-  <adapter 
+  <adapter
      provides="z3c.form.interfaces.IButtonAction"
      factory=".buttons.PublishButtonAction" />
 
@@ -150,7 +150,7 @@
     <allow attributes="render" />
   </class>
 
-  <adapter 
+  <adapter
      provides="z3c.form.interfaces.IButtonAction"
      factory=".buttons.RemoveButtonAction" />
 
@@ -158,7 +158,7 @@
     <allow attributes="render" />
   </class>
 
-  <adapter 
+  <adapter
      provides="z3c.form.interfaces.IButtonAction"
      factory=".buttons.SaveDraftButtonAction" />
 
@@ -170,12 +170,14 @@
   <class class=".locationwidget.LocationWidget">
     <require
        permission="zope.Public"
-       interface="z3c.form.interfaces.ISelectWidget" />
+       interface="z3c.form.interfaces.IWidget" />
   </class>
+
+  <adapter factory=".locationwidget.LocationFieldWidget" />
 
   <z3c:widgetTemplate
      mode="input"
-     widget=".locationwidget.LocationWidget"
+     widget="zojax.content.draft.interfaces.ILocationWidget"
      layer="z3c.form.interfaces.IFormLayer"
      template="locationwidget_input.pt" />
 

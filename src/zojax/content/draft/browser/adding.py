@@ -36,7 +36,6 @@ from zojax.content.draft.interfaces import DraftException
 import interfaces
 from wizard import DraftWizard
 from interfaces import IContentLocationStep
-from locationwidget import LocationFieldWidget
 
 
 class BaseAddDraftWizard(DraftWizard):

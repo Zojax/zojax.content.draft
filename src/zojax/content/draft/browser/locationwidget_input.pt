@@ -1,28 +1,79 @@
-<tal:block tal:repeat="item view/items">
-  <div class="z-locationwidget-item">
-    <input type="radio" id="" value=""
-           tal:attributes="id item/id;
-                           value item/value;
-                           name string:${view/name}:list;
-			   checked item/selected;
-                           class view/klass;
-                           style view/style;
-			   lang view/lang;
-			   disabled view/disabled;
-			   tabindex view/tabindex;" />
-    <span>
-      <tal:block tal:condition="item/icon" tal:content="structure item/icon" />
-      <a tal:content="structure item/breadcrum/name" target="_blank"
-	 tal:attributes="href item/breadcrum/url; title item/description">label</a>
-      <tal:block tal:condition="item/space">
-        <tal:block i18n:translate="">
-	in
+<!--div tal:define="location view/getSelected" tal:condition="location">
+  Selected: <b><tal:block content="location/title" /></b>
+  <input type="hidden"
+	 tal:attributes="name view/selectedName; value location/id" />
+</div-->
+
+<div class="z-table-container" tal:condition="view/locations">
+  <table class="z-table" style="min-width: 50%">
+    <tr class="z-table-pages">
+      <td colspan="3">
+	<tal:block content="structure view/locations/@@pagelet/batch.view" />
+      </td>
+    </tr>
+    <tbody>
+      <tal:block repeat="location view/locations">
+      <tr tal:define="oddrow repeat/location/odd"
+          tal:attributes="class python: oddrow and 'odd' or 'even'">
+
+    <tal:block tal:define="info python:view.getLocationInfo(location)">
+	<td>
+	  <input type="radio" id="" name="" class="" title="" lang=""
+		 disabled="" readonly="" alt="" tabindex="" accesskey=""
+		 tal:attributes="id string:${view/name}-${info/id};
+		                 name view/name;
+				         class view/klass;
+				         style view/style;
+				         title location/title;
+				         lang view/lang;
+				         checked python:view.value == info['id'];
+				         value info/value;
+				         disabled view/disabled;
+				         tabindex view/tabindex;
+				         readonly view/readonly;
+				         accesskey view/accesskey" />
+
+	  <tal:block tal:condition="info/icon" tal:content="structure info/icon" />
+	  <a tal:content="structure info/breadcrum/name" target="_blank"
+         tal:attributes="href info/breadcrum/url;
+                         title info/description">label</a>
+
+	  <span class="discreet">
+        <tal:block tal:condition="info/space">
+          <tal:block i18n:translate="">in</tal:block>
+          <a tal:content="structure info/space" target="_blank"
+             tal:attributes="href info/spaceUrl;
+                             title info/spaceDescription">label</a>
+        </tal:block>
+	  </span>
+	</td>
 	</tal:block>
-	<a tal:content="structure item/space" target="_blank"
-	   tal:attributes="href item/spaceUrl; title item/spaceDescription">label</a>
+
+      </tr>
       </tal:block>
-    </span>
-  </div>
+    </tbody>
+  </table>
+</div>
+
+<tal:block condition="not:view/locations">
+  <tal:block condition="view/searching">
+    <p i18n:translate="">No results were found.</p>
+  </tal:block>
+  <tal:block condition="not:view/searching">
+    <p i18n:translate="">There are no available locations.</p>
+  </tal:block>
+</tal:block>
+
+<tal:block>
+  <input type="text"
+	     tal:attributes="name string:${view/name}.searchText;
+			             value view/searchtext" />
+  <input type="submit" value="Search" i18n:attributes="value"
+	     class="z-form-button"
+	     tal:attributes="name string:${view/name}.searchButton" />
+  <input type="submit" value="Clear" i18n:attributes="value"
+	     class="z-form-removebutton" tal:condition="view/searching"
+	     tal:attributes="name string:${view/name}.searchClear" />
 </tal:block>
 
 <input name="field-empty-marker" type="hidden" value="1"

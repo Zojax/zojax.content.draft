@@ -54,12 +54,12 @@ class ContentLocationStep(WizardStepForm):
         super(ContentLocationStep, self).update()
 
         widget = self.widgets['location']
-        if len(widget.terms) == 1:
+        if widget.totalcount == 1 and not widget.searching:
             draft = self.wizard.draft
-            term = iter(widget.terms).next()
+            id = getUtility(IIntIds).getId(widget.locations[0])
 
-            if draft.location != term.value:
-                draft.location = term.value
+            if draft.location != id:
+                draft.location = id
                 event.notify(DraftLocationChangedEvent(
                         draft.content, draft, draft.getLocation()))
 
@@ -69,7 +69,7 @@ class ContentLocationStep(WizardStepForm):
             return False
 
         widget = self.widgets['location']
-        if len(widget.terms) == 1:
+        if widget.totalcount == 1 and not widget.searching:
             return False
 
         return super(ContentLocationStep, self).isAvailable()
