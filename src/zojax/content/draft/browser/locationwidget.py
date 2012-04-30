@@ -40,14 +40,12 @@ SESSIONKEY = 'zojax.batching'
 
 
 def searchLocations(query=None):
-
-    results = None
     catalog = getUtility(ICatalog)
 
     if query:
-        results = catalog.searchResults(**query)
+        return catalog.searchResults(**query)
 
-    return results
+    return None
 
 
 class LocationWidget(HTMLInputWidget, Widget):
@@ -122,6 +120,12 @@ class LocationWidget(HTMLInputWidget, Widget):
                     results = []
             else:
                 results = searchLocations(query)
+
+        if results:
+            # NOTE: check Permissions for results
+            perms = perms.keys()
+            for perm in perms:
+                results.filter(lambda x: checkPermission(perm, x))
 
         self.searching = searching
         self.searchtext = searchtext

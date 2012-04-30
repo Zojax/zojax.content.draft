@@ -24,7 +24,7 @@
 		                 name view/name;
 				         class view/klass;
 				         style view/style;
-				         title location/title;
+				         title location/title|nothing;
 				         lang view/lang;
 				         checked python:view.value == info['id'];
 				         value info/value;
