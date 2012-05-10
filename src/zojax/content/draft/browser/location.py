@@ -16,6 +16,7 @@
 $Id$
 """
 from zope import interface, event
+from zope.app.intid.interfaces import IIntIds
 from zope.component import getUtility
 
 from zojax.layoutform import Fields
