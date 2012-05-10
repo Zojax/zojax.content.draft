@@ -16,6 +16,7 @@
 $Id$
 """
 from zope import interface, event
+from zope.component import getUtility
 
 from zojax.layoutform import Fields
 from zojax.wizard import WizardStepForm
