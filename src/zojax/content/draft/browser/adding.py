@@ -164,10 +164,13 @@ class BaseAddDraftWizard(DraftWizard):
         self.clear()
 
         view = queryMultiAdapter((content, self.request), IContentViewView)
-        if view is not None:
-            self.redirect('%s/%s'%(absoluteURL(content,self.request),view.name))
+        if self.request.response.getStatus() in (302, 303):
+            self.redirect(self.request.response.getHeader('location'))
         else:
-            self.redirect('%s/'%absoluteURL(content, self.request))
+            if view is not None:
+                self.redirect('%s/%s'%(absoluteURL(content,self.request),view.name))
+            else:
+                self.redirect('%s/'%absoluteURL(content, self.request))
 
         IStatusMessage(self.request).add(
             _(u'Your ${type_title} has been published.',
