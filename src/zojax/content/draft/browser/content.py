@@ -15,6 +15,8 @@
 
 $Id$
 """
+import string
+
 from zope import interface, component, schema
 from zope.exceptions.interfaces import UserError
 from zope.app.container.interfaces import \
@@ -67,6 +69,11 @@ class ContentShortnameForm(PageletEditSubForm):
 
     def applyChanges(self, data):
         draft = self.parentForm.wizard.draft
+        if data['shortname']:
+            valid_chars = "-%s%s" % (string.lowercase, string.digits)
+            shortname = data['shortname'].lower()
+            shortname = ''.join(c for c in shortname if c in valid_chars)
+            data['shortname'] = shortname
         if draft.shortname != data['shortname']:
             draft.shortname = data['shortname']
 
