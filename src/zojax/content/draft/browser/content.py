@@ -67,10 +67,11 @@ class ContentShortnameForm(PageletEditSubForm):
         try:
             draft = self.parentForm.wizard.draft
             print 'draft called: %s' % draft
+            return {'shortname': draft.shortname}
         except AttributeError:
             print 'Something is broken in the draft'
+            return None
 
-        return {'shortname': draft.shortname}
 
     def applyChanges(self, data):
         draft = self.parentForm.wizard.draft
