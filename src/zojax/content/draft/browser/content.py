@@ -64,7 +64,12 @@ class ContentShortnameForm(PageletEditSubForm):
     fields = Fields(IContentRenameForm)
 
     def getContent(self):
-        draft = self.parentForm.wizard.draft
+        try:
+            draft = self.parentForm.wizard.draft
+            print 'draft called: %s' % draft
+        except AttributeError:
+            print 'Something is broken in the draft'
+
         return {'shortname': draft.shortname}
 
     def applyChanges(self, data):
