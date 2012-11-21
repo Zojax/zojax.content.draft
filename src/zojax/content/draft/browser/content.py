@@ -84,7 +84,12 @@ class ContentShortnameForm(PageletEditSubForm):
             draft.shortname = data['shortname']
 
     def isAvailable(self):
-        draft = self.parentForm.wizard.draft
+        try:
+            draft = self.parentForm.wizard.draft
+            print 'draft called: %s' % draft
+        except AttributeError:
+            print 'Something is broken in the draft'
+            return False
         content = draft.content
         location = draft.getLocation()
 
