@@ -70,7 +70,7 @@ class ContentShortnameForm(PageletEditSubForm):
     def applyChanges(self, data):
         draft = self.parentForm.wizard.draft
         if data['shortname']:
-            valid_chars = "-%s%s" % (string.lowercase, string.digits)
+            valid_chars = "-.%s%s" % (string.lowercase, string.digits)
             shortname = data['shortname'].lower()
             shortname = ''.join(c for c in shortname if c in valid_chars)
             data['shortname'] = shortname
