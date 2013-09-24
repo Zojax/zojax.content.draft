@@ -1,54 +1,48 @@
 <!--div tal:define="location view/getSelected" tal:condition="location">
   Selected: <b><tal:block content="location/title" /></b>
   <input type="hidden"
-	 tal:attributes="name view/selectedName; value location/id" />
+     tal:attributes="name view/selectedName; value location/id" />
 </div-->
 
 <div class="z-table-container" tal:condition="view/locations">
   <table class="z-table" style="min-width: 50%">
     <tr class="z-table-pages">
-      <td colspan="3">
-	<tal:block content="structure view/locations/@@pagelet/batch.view" />
-      </td>
+      <td colspan="3"><tal:block content="structure view/locations/@@pagelet/batch.view" /></td>
     </tr>
     <tbody>
       <tal:block repeat="location view/locations">
       <tr tal:define="oddrow repeat/location/odd"
           tal:attributes="class python: oddrow and 'odd' or 'even'">
-
     <tal:block tal:define="info python:view.getLocationInfo(location)">
-	<td>
-	  <input type="radio" id="" name="" class="" title="" lang=""
-		 disabled="" readonly="" alt="" tabindex="" accesskey=""
-		 tal:attributes="id string:${view/name}-${info/id};
-		                 name view/name;
-				         class view/klass;
-				         style view/style;
-				         title location/title|nothing;
-				         lang view/lang;
-				         checked python:view.value == info['id'];
-				         value info/value;
-				         disabled view/disabled;
-				         tabindex view/tabindex;
-				         readonly view/readonly;
-				         accesskey view/accesskey" />
-
-	  <tal:block tal:condition="info/icon" tal:content="structure info/icon" />
-	  <a tal:content="structure info/breadcrum/name" target="_blank"
+    <td>
+      <input type="radio" id="" name="" class="" title="" lang=""
+         disabled="" readonly="" alt="" tabindex="" accesskey=""
+         tal:attributes="id string:${view/name}-${info/id};
+                         name view/name;
+                         class view/klass;
+                         style view/style;
+                         title location/title|nothing;
+                         lang view/lang;
+                         checked python:view.value == info['id'];
+                         value info/value;
+                         disabled view/disabled;
+                         tabindex view/tabindex;
+                         readonly view/readonly;
+                         accesskey view/accesskey" />
+      <tal:block tal:condition="info/icon" tal:content="structure info/icon" />
+      <a tal:content="structure info/breadcrum/name" target="_blank"
          tal:attributes="href info/breadcrum/url;
                          title info/description">label</a>
-
-	  <span class="discreet">
+      <span class="discreet">
         <tal:block tal:condition="info/space">
           <tal:block i18n:translate="">in</tal:block>
           <a tal:content="structure info/space" target="_blank"
              tal:attributes="href info/spaceUrl;
                              title info/spaceDescription">label</a>
         </tal:block>
-	  </span>
-	</td>
-	</tal:block>
-
+      </span>
+    </td>
+    </tal:block>
       </tr>
       </tal:block>
     </tbody>
@@ -66,14 +60,14 @@
 
 <tal:block>
   <input type="text"
-	     tal:attributes="name string:${view/name}.searchText;
-			             value view/searchtext" />
+         tal:attributes="name string:${view/name}.searchText;
+                         value view/searchtext" />
   <input type="submit" value="Search" i18n:attributes="value"
-	     class="z-form-button"
-	     tal:attributes="name string:${view/name}.searchButton" />
+         class="z-form-button"
+         tal:attributes="name string:${view/name}.searchButton" />
   <input type="submit" value="Clear" i18n:attributes="value"
-	     class="z-form-removebutton" tal:condition="view/searching"
-	     tal:attributes="name string:${view/name}.searchClear" />
+         class="z-form-removebutton" tal:condition="view/searching"
+         tal:attributes="name string:${view/name}.searchClear" />
 </tal:block>
 
 <input name="field-empty-marker" type="hidden" value="1"

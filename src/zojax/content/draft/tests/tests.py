@@ -111,6 +111,6 @@ def test_suite():
                 optionflags=doctest.NORMALIZE_WHITESPACE|doctest.ELLIPSIS),
 
             FunctionalDocFileSuite("draft.txt"),
-            #FunctionalDocFileSuite("vocabulary.txt"),
+            FunctionalDocFileSuite("vocabulary.txt"),
             FunctionalDocFileSuite("testbrowser.txt"),
             ))

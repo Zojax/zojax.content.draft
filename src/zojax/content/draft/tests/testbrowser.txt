@@ -74,7 +74,7 @@ Content
 Browser tests
 
     >>> from zope.testbrowser.testing import Browser
-    
+
     >>> user1 = Browser()
     >>> user1.addHeader("Authorization", "Basic user1:userpw1")
     >>> user1.handleErrors = False
@@ -114,38 +114,57 @@ Location step
     >>> print user1.contents
     <html>
     ...
-    <h1 class="z-draft-heading">
-       <span class="z-draft-heading-info">
+      <h1 class="z-draft-heading">
+        <span class="z-draft-heading-info">
           Adding content:
           Content2
-       </span>
-       <span class="z-draft-heading-location">
+        </span>
+        <span class="z-draft-heading-location">
           in
-          <span class="z-draft-heading-info">
-             Location is not selected
-          </span>
-       </span>
-    </h1>
     ...
-    <label for="location-widgets-location" title="Please select location where you whould like to create content.">Content location</label>
+            Location is not selected
     ...
-    <a target="_blank" href="http://localhost/container1/">Container 1</a>
+        </span>
+      </h1>
     ...
-    <a target="_blank" href="http://localhost/container2/">Container 2</a>
+      <label for="location-widgets-location" title="Please select location where you whould like to create content.">Content location</label>
+      <span class="z-form-fieldRequired">&nbsp;</span>
     ...
-    <div class="z-form-controls">
-      <span>
-        <hr />
-        <input id="form-buttons-savenext"
+        <tr class="z-table-pages">
+          <td colspan="3"></td>
+        </tr>
+    ...
+          <input type="radio"
+                 id="location.widgets.location-..."
+                 name="location.widgets.location"
+                 class="required" title="Container 1" alt=""
+                 value="..." />
+          <img .../>
+          <a target="_blank" href="http://localhost/container1/">Container 1</a>
+    ...
+          <input type="radio"
+                 id="location.widgets.location-..."
+                 name="location.widgets.location"
+                 class="required" title="Container 2" alt=""
+                 value="..." />
+          <img .../>
+          <a target="_blank" href="http://localhost/container2/">Container 2</a>
+    ...
+      <input type="text"
+             name="location.widgets.location.searchText"
+             value="" />
+      <input type="submit" value="Search" class="z-form-button"
+             name="location.widgets.location.searchButton" />
+    ...
+    <input id="form-buttons-savenext"
            name="form.buttons.savenext"
            class="z-wizard-forwardbutton button-field"
            value="Next" type="submit" />
-        <input id="form-buttons-cancel"
-           name="form.buttons.cancel"
+    <BLANKLINE>
+    <BLANKLINE>
+    <input id="form-buttons-cancel" name="form.buttons.cancel"
            class="z-form-cancelbutton button-field"
            value="Cancel" type="submit" />
-      </span>
-    </div>
     ...
     </html>
 
@@ -164,7 +183,7 @@ Location step
     ...
     </html>
 
-    >>> user1.getControl(name="location.widgets.location:list").value = [str(container1ID)]
+    >>> user1.getControl(name="location.widgets.location").value = [str(container1ID)]
     >>> user1.getControl('Next').click()
     >>> print user1.url
     http://localhost/people/user1/content/draft/+/tests.content2/index.html/content/
@@ -454,7 +473,7 @@ Publish by manager
 Create and publish
 
     >>> user1.open('http://localhost/people/user1/content/draft/+/tests.content2/')
-    >>> user1.getControl(name="location.widgets.location:list").value = [str(container2ID)]
+    >>> user1.getControl(name="location.widgets.location").value = [str(container2ID)]
     >>> user1.getControl('Next').click()
 
     >>> print user1.contents
@@ -517,7 +536,7 @@ Create and publish
 Save and continue
 
     >>> user1.open('http://localhost/people/user1/content/draft/+/tests.content2/')
-    >>> user1.getControl(name="location.widgets.location:list").value = [str(container1ID)]
+    >>> user1.getControl(name="location.widgets.location").value = [str(container1ID)]
     >>> user1.getControl('Next').click()
 
     >>> user1.getControl('Title').value = u'Content 2'
@@ -541,7 +560,7 @@ Remove draft
 Remove draft from edit form
 
     >>> user1.open('http://localhost/people/user1/content/draft/+/tests.content2/')
-    >>> user1.getControl(name="location.widgets.location:list").value = [str(container1ID)]
+    >>> user1.getControl(name="location.widgets.location").value = [str(container1ID)]
     >>> user1.getControl('Next').click()
 
     >>> user1.getControl('Title').value = u'Content 2'
@@ -559,7 +578,7 @@ Remove draft from edit form
 Remove submitted draft from edit form
 
     >>> user1.open('http://localhost/people/user1/content/draft/+/tests.content2/')
-    >>> user1.getControl(name="location.widgets.location:list").value = [str(container1ID)]
+    >>> user1.getControl(name="location.widgets.location").value = [str(container1ID)]
     >>> user1.getControl('Next').click()
 
     >>> user1.getControl('Title').value = u'Content 2'
@@ -581,7 +600,7 @@ Publish
     >>> admin.open('http://localhost/people/manager/content/')
     >>> admin.getLink('Content2').click()
     >>> admin.getLink('Create: Content2').click()
-    >>> admin.getControl(name="location.widgets.location:list").value = [str(container1ID)]
+    >>> admin.getControl(name="location.widgets.location").value = [str(container1ID)]
     >>> admin.getControl('Next').click()
     >>> admin.getControl('Title').value = u'Content 2'
     >>> admin.getControl('Short Name').value = 'content2'

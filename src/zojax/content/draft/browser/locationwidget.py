@@ -18,9 +18,8 @@ $Id$
 from zope import interface, component
 from zope.app.intid.interfaces import IIntIds
 from zope.component import getUtility, getMultiAdapter, queryMultiAdapter
-from zope.security import checkPermission
+#from zope.security import checkPermission
 from zope.session.interfaces import ISession
-from zope.schema.interfaces import IField
 from zope.traversing.api import getPath
 
 from z3c.breadcrumb.interfaces import IBreadcrumb
@@ -121,11 +120,11 @@ class LocationWidget(HTMLInputWidget, Widget):
             else:
                 results = searchLocations(query)
 
-        if results:
-            # NOTE: check Permissions for results
-            perms = perms.keys()
-            for perm in perms:
-                results.filter(lambda x: checkPermission(perm, x))
+        #if results:
+        #    # NOTE: check Permissions for results
+        #    perms = perms.keys()
+        #    for perm in perms:
+        #        results.filter(lambda x: checkPermission(perm, x))
 
         self.searching = searching
         self.searchtext = searchtext

@@ -3,9 +3,9 @@
     <hr />
     <div class="z-form-field" tal:condition="context/isPublishable" >
       <label i18n:translate="">Comment</label>: <input type="text" name="form.action.comment"
-				     tal:attributes="value request/form.action.comment|nothing"/>
+                     tal:attributes="value request/form.action.comment|nothing"/>
     </div>
     <input tal:repeat="action context/actions/values"
-	   tal:replace="structure action/render" />
+       tal:replace="structure action/render" />
   </span>
 </div>

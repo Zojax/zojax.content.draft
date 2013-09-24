@@ -6,7 +6,7 @@
     </span>
     <span class="z-draft-heading-location" i18n:translate="">
       in
-      <a href="#" tal:condition="layout/locationUrl" i18n:name="link" 
+      <a href="#" tal:condition="layout/locationUrl" i18n:name="link"
 	 tal:attributes="href string:${layout/locationUrl}"
 	 tal:content="layout/locationTitle">Location</a>
       <tal:block tal:condition="layout/containerUrl" i18n:name="contain_link" >
@@ -15,13 +15,11 @@
 	  (<tal:block content="layout/containerTitle" i18n:name="container_title" />)</a>
       </tal:block>
       <span tal:condition="not:layout/locationUrl" class="z-draft-heading-info" i18n:name="location" >
-	<tal:block i18n:translate="">
-	Location is not selected
-	</tal:block>
+	    <tal:block i18n:translate="">Location is not selected</tal:block>
       </span>
     </span>
   </h1>
-  
+
   <div class="z-form-description"
        tal:content="layoutcontext/description|nothing"></div>
 
@@ -44,7 +42,7 @@
     <div class="z-wizard-viewspace">
       <tal:block content="structure view/render" />
     </div>
-    
+
     <tal:block tal:content="structure layoutcontext/@@pagelet/form.buttons" />
   </form>
 </div>
