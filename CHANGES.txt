@@ -1,6 +1,9 @@
 1.0.2 (Unreleased)
 ------------------
 
+- Fixed issues with NotYet exception for LOCK and UNLOCK requests
+  [bogdangi]
+
 
 1.0.1 (2010-01-19)
 ------------------

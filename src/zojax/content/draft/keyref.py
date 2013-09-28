@@ -28,6 +28,7 @@ from zope.app.intid import addIntIdSubscriber, removeIntIdSubscriber
 
 from zojax.content.type.interfaces import IContent
 from zojax.content.draft.interfaces import IDraftContent
+from zope.security.proxy import removeSecurityProxy
 
 
 @component.adapter(IContent)
@@ -37,7 +38,7 @@ def getKeyReference(object):
         return
 
     try:
-        return KeyReferenceToPersistent(object)
+        return KeyReferenceToPersistent(removeSecurityProxy(object))
     except NotYet:
         while not IDraftContent.providedBy(object):
             object = getattr(object, '__parent__', None)
